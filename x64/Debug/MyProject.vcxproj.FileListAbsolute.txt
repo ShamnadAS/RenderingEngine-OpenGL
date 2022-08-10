@@ -1,1 +1,2 @@
 D:\OpenGL\MyProject\x64\Debug\MyProject.exe
+C:\Users\Shamnad\Documents\GitHub\RenderingEngine-OpenGL\x64\Debug\MyProject.exe
