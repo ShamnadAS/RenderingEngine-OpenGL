@@ -137,8 +137,7 @@ int main()
 	glEnableVertexAttribArray(0);
 
 	lightingShader.use();
-	unsigned int lightPosLoc = glGetUniformLocation(lightingShader.ID, "lightPos");
-	glUniform3f(lightPosLoc, lightPos.x, lightPos.y, lightPos.z);
+	
 
 	//wireframe mode	
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -158,12 +157,27 @@ int main()
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+		//object attributes
+		Vector3 objectPos(4.0f, 0.0f, 0.0f);
+
+		//light position update
+		float lightSpeed = 0.1f;
+		float radius = 2.0f;
+		lightPos.x = objectPos.x + radius * cosf((float)glfwGetTime());
+		lightPos.z = objectPos.z + radius * sinf((float)glfwGetTime());
+
 		//Render object
 		lightingShader.use();
 		unsigned int objectColorLoc = glGetUniformLocation(lightingShader.ID, "objectColor");
 		unsigned int lightColorLoc = glGetUniformLocation(lightingShader.ID, "lightColor");
+		unsigned int viewPosLoc = glGetUniformLocation(lightingShader.ID, "viewPos");
+		unsigned int lightPosLoc = glGetUniformLocation(lightingShader.ID, "lightPos");
+
 		glUniform3f(objectColorLoc, 1.0f, 0.5f, 0.31f);
 		glUniform3f(lightColorLoc, 1.0f, 1.0f, 1.0f);
+		glUniform3f(viewPosLoc, camera.Position.x, camera.Position.y, camera.Position.z);
+		glUniform3f(lightPosLoc, lightPos.x, lightPos.y, lightPos.z);
+
 		glBindVertexArray(objectVAO);
 
 		//Set up transforms
@@ -171,7 +185,7 @@ int main()
 		Matrix4 view;
 		Matrix4 projection;
 
-		model.translate(Vector3(4.0f, 0.0f, 0.0f));
+		model.translate(Vector3(objectPos));
 		view = camera.GetViewMatrix();
 		projection = projection.perspective(camera.Zoom, (float)scr_width / (float)scr_height, 100.0f, 0.1f);
 
