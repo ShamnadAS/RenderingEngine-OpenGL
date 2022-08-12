@@ -29,7 +29,7 @@ float lastX = 400, lastY = 300;
 bool firstMouse = true;
 
 //Lighting
-Vector3 lightPos(2.0f, 2.0f, 2.0f);
+Vector3 lightPos(0.0f, 2.0f, 2.0f);
 
 int main()
 {
@@ -163,8 +163,8 @@ int main()
 		//light position update
 		float lightSpeed = 0.1f;
 		float radius = 2.0f;
-		lightPos.x = objectPos.x + radius * cosf((float)glfwGetTime());
-		lightPos.z = objectPos.z + radius * sinf((float)glfwGetTime());
+		//lightPos.x = objectPos.x + radius * cosf((float)glfwGetTime());
+		//lightPos.z = objectPos.z + radius * sinf((float)glfwGetTime());
 
 		//Render object
 		lightingShader.use();
@@ -206,7 +206,7 @@ int main()
 		viewLoc = glGetUniformLocation(lightSourceShader.ID, "view");
 		modelLoc = glGetUniformLocation(lightSourceShader.ID, "model");
 		projectionLoc = glGetUniformLocation(lightSourceShader.ID, "projection");
-
+		 
 		model = Matrix4().identity();
 		model.scale(0.25f, 0.25f, 0.25f);
 		model.translate(lightPos);
