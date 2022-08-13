@@ -168,14 +168,27 @@ int main()
 
 		//Render object
 		lightingShader.use();
-		unsigned int objectColorLoc = glGetUniformLocation(lightingShader.ID, "objectColor");
-		unsigned int lightColorLoc = glGetUniformLocation(lightingShader.ID, "lightColor");
-		unsigned int viewPosLoc = glGetUniformLocation(lightingShader.ID, "viewPos");
+		unsigned int materialAmbientLoc = glGetUniformLocation(lightingShader.ID, "material.ambient");
+		unsigned int materialDiffuseLoc = glGetUniformLocation(lightingShader.ID, "material.diffuse");
+		unsigned int materialSpecularLoc = glGetUniformLocation(lightingShader.ID, "material.specular");
+
+		unsigned int lightAmbientLoc = glGetUniformLocation(lightingShader.ID, "light.ambient");
+		unsigned int lightDiffuseLoc = glGetUniformLocation(lightingShader.ID, "light.diffuse");
+		unsigned int lightSpecularLoc = glGetUniformLocation(lightingShader.ID, "light.specular");
+
 		unsigned int lightPosLoc = glGetUniformLocation(lightingShader.ID, "lightPos");
 
-		glUniform3f(objectColorLoc, 1.0f, 0.5f, 0.31f);
-		glUniform3f(lightColorLoc, 1.0f, 1.0f, 1.0f);
-		glUniform3f(viewPosLoc, camera.Position.x, camera.Position.y, camera.Position.z);
+		//material properties
+		glUniform3f(materialAmbientLoc, 1.0f, 0.5f, 0.31f);
+		glUniform3f(materialDiffuseLoc, 1.0f, 0.5f, 0.31f);
+		glUniform3f(materialSpecularLoc, 0.5f, 0.5f, 0.5f);
+		lightingShader.setFloat("material.shininess", 32.0f);
+
+		//light properties
+		glUniform3f(lightAmbientLoc, 0.2f, 0.2f, 0.2f);
+		glUniform3f(lightDiffuseLoc, 1.0f, 1.0f, 1.0f);
+		glUniform3f(lightSpecularLoc, 1.0f, 1.0f, 1.0f);
+
 		glUniform3f(lightPosLoc, lightPos.x, lightPos.y, lightPos.z);
 
 		glBindVertexArray(objectVAO);
