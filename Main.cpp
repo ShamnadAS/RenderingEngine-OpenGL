@@ -29,7 +29,7 @@ float lastX = 400, lastY = 300;
 bool firstMouse = true;
 
 //Lighting
-Vector3 lightPos(0.0f, 2.0f, 2.0f);
+Vector3 lightPos(0.5f, 1.10f, 2.0f);
 
 int main()
 {
@@ -72,73 +72,122 @@ int main()
 
 	//set up vertex data (and buffer(s)) and configure vertex attributes
 	float vertices[] = {
-	//Coordinates        //Normals
-	-0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f,
-	 0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f,
-	 0.5f,  0.5f, -0.5f, 0.0f, 0.0f, -1.0f,
-	 0.5f,  0.5f, -0.5f, 0.0f, 0.0f, -1.0f,
-	-0.5f,  0.5f, -0.5f, 0.0f, 0.0f, -1.0f,
-	-0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f,
+		// positions          // normals           // texture coords
+		-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f,  0.0f,
+		 0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f,  0.0f,
+		 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f,  1.0f,
+		 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f,  1.0f,
+		-0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f,  1.0f,
+		-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f,  0.0f,
 
-	-0.5f, -0.5f,  0.5f, 0.0f, 0.0f, 1.0f,
-	 0.5f, -0.5f,  0.5f, 0.0f, 0.0f, 1.0f,
-	 0.5f,  0.5f,  0.5f, 0.0f, 0.0f, 1.0f,
-	 0.5f,  0.5f,  0.5f, 0.0f, 0.0f, 1.0f,
-	-0.5f,  0.5f,  0.5f, 0.0f, 0.0f, 1.0f,
-	-0.5f, -0.5f,  0.5f, 0.0f, 0.0f, 1.0f,
+		-0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f,  0.0f,
+		 0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f,  0.0f,
+		 0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f,  1.0f,
+		 0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f,  1.0f,
+		-0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f,  1.0f,
+		-0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f,  0.0f,
 
-	-0.5f,  0.5f,  0.5f, -1.0f, 0.0f, 0.0f,
-	-0.5f,  0.5f, -0.5f, -1.0f, 0.0f, 0.0f,
-	-0.5f, -0.5f, -0.5f, -1.0f, 0.0f, 0.0f,
-	-0.5f, -0.5f, -0.5f, -1.0f, 0.0f, 0.0f,
-	-0.5f, -0.5f,  0.5f, -1.0f, 0.0f, 0.0f,
-	-0.5f,  0.5f,  0.5f, -1.0f, 0.0f, 0.0f,
+		-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
+		-0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  1.0f,  1.0f,
+		-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
+		-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
+		-0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  0.0f,  0.0f,
+		-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
 
-	 0.5f,   0.5f,  0.5f, 1.0f, 0.0f, 0.0f,
-	 0.5f,   0.5f, -0.5f, 1.0f, 0.0f, 0.0f,
-	 0.5f,  -0.5f, -0.5f, 1.0f, 0.0f, 0.0f,
-	 0.5f,  -0.5f, -0.5f, 1.0f, 0.0f, 0.0f,
-	 0.5f,  -0.5f,  0.5f, 1.0f, 0.0f, 0.0f,
-	 0.5f,   0.5f,  0.5f, 1.0f, 0.0f, 0.0f,
+		 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
+		 0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  1.0f,  1.0f,
+		 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
+		 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
+		 0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  0.0f,  0.0f,
+		 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
 
-	-0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f,
-	 0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f,
-	 0.5f, -0.5f,  0.5f, 0.0f, -1.0f, 0.0f,
-	 0.5f, -0.5f,  0.5f, 0.0f, -1.0f, 0.0f,
-	-0.5f, -0.5f,  0.5f, 0.0f, -1.0f, 0.0f,
-	-0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f,
+		-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f,  1.0f,
+		 0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  1.0f,  1.0f,
+		 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f,  0.0f,
+		 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f,  0.0f,
+		-0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  0.0f,  0.0f,
+		-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f,  1.0f,
 
-	-0.5f,  0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
-	 0.5f,  0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
-	 0.5f,  0.5f,  0.5f, 0.0f, 1.0f, 0.0f,
-	 0.5f,  0.5f,  0.5f, 0.0f, 1.0f, 0.0f,
-	-0.5f,  0.5f,  0.5f, 0.0f, 1.0f, 0.0f,
-	-0.5f,  0.5f, -0.5f, 0.0f, 1.0f, 0.0f
+		-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f,
+		 0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  1.0f,  1.0f,
+		 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f,  0.0f,
+		 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f,  0.0f,
+		-0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  0.0f,
+		-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f
 	};
 
 	unsigned int objectVAO, lightVAO, VBO;
 	glGenVertexArrays(1, &objectVAO);
-	glGenBuffers(1, &VBO); 
+	glGenBuffers(1, &VBO);
 	//VAO for object
 	glBindVertexArray(objectVAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 	//position attribute
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
 	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+	glEnableVertexAttribArray(2);
 	
 	//VAO for light
 	glGenVertexArrays(1, &lightVAO);
 	glBindVertexArray(lightVAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 
-	lightingShader.use();
-	
+	//load texture diffuse
+	unsigned int diffuseMap;
+	glGenTextures(1, &diffuseMap);
+	glBindTexture(GL_TEXTURE_2D, diffuseMap);
+	// set the texture wrapping/filtering options (on currently bound texture)
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	// load and generate the texture
+	int width, height, nrChannels;
+	unsigned char* data = stbi_load("resources/textures/container2.png", &width, &height, &nrChannels, 0);
+	if (data)
+	{
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA,
+			GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else
+	{
+		std::cout << "Failed to load texture" << std::endl;
+	}
+	stbi_image_free(data);
+	//load texture specular
+	unsigned int specularMap;
+	glGenTextures(1, &specularMap);
+	glBindTexture(GL_TEXTURE_2D, specularMap);
+	// set the texture wrapping/filtering options (on currently bound texture)
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	// load and generate the texture
+	data = stbi_load("resources/textures/container2_specular.png", &width, &height, &nrChannels, 0);
+	if (data)
+	{
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA,
+			GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else
+	{
+		std::cout << "Failed to load texture" << std::endl;
+	}
+	stbi_image_free(data);
 
+	lightingShader.use();
+	lightingShader.setInt("material.diffuse", 0);
+	lightingShader.setInt("material.specular", 1);
+	
 	//wireframe mode	
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
@@ -163,35 +212,25 @@ int main()
 		//light position update
 		float lightSpeed = 0.1f;
 		float radius = 2.0f;
-		//lightPos.x = objectPos.x + radius * cosf((float)glfwGetTime());
-		//lightPos.z = objectPos.z + radius * sinf((float)glfwGetTime());
 
-		//Render object
-		lightingShader.use();
+		//set uniforms for the object
 		unsigned int materialAmbientLoc = glGetUniformLocation(lightingShader.ID, "material.ambient");
 		unsigned int materialDiffuseLoc = glGetUniformLocation(lightingShader.ID, "material.diffuse");
 		unsigned int materialSpecularLoc = glGetUniformLocation(lightingShader.ID, "material.specular");
-
 		unsigned int lightAmbientLoc = glGetUniformLocation(lightingShader.ID, "light.ambient");
 		unsigned int lightDiffuseLoc = glGetUniformLocation(lightingShader.ID, "light.diffuse");
 		unsigned int lightSpecularLoc = glGetUniformLocation(lightingShader.ID, "light.specular");
-
 		unsigned int lightPosLoc = glGetUniformLocation(lightingShader.ID, "lightPos");
 
-		//material properties
+		lightingShader.use();
 		glUniform3f(materialAmbientLoc, 1.0f, 0.5f, 0.31f);
 		glUniform3f(materialDiffuseLoc, 1.0f, 0.5f, 0.31f);
 		glUniform3f(materialSpecularLoc, 0.5f, 0.5f, 0.5f);
-		lightingShader.setFloat("material.shininess", 32.0f);
-
-		//light properties
+		lightingShader.setFloat("material.shininess", 16.0f);
+		glUniform3f(lightPosLoc, lightPos.x, lightPos.y, lightPos.z);
 		glUniform3f(lightAmbientLoc, 0.2f, 0.2f, 0.2f);
 		glUniform3f(lightDiffuseLoc, 1.0f, 1.0f, 1.0f);
 		glUniform3f(lightSpecularLoc, 1.0f, 1.0f, 1.0f);
-
-		glUniform3f(lightPosLoc, lightPos.x, lightPos.y, lightPos.z);
-
-		glBindVertexArray(objectVAO);
 
 		//Set up transforms
 		Matrix4 model;
@@ -210,12 +249,15 @@ int main()
 		glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, projection.get());
 		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, model.get());
 
-		glDrawArrays(GL_TRIANGLES, 0, 36);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, diffuseMap);
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, specularMap);
 
-		//Render light source
-		lightSourceShader.use();
-		glBindVertexArray(lightVAO);
+		glBindVertexArray(objectVAO);
+		glDrawArrays(GL_TRIANGLES, 0, 64);
 
+		//set up LightSource
 		viewLoc = glGetUniformLocation(lightSourceShader.ID, "view");
 		modelLoc = glGetUniformLocation(lightSourceShader.ID, "model");
 		projectionLoc = glGetUniformLocation(lightSourceShader.ID, "projection");
@@ -224,10 +266,12 @@ int main()
 		model.scale(0.25f, 0.25f, 0.25f);
 		model.translate(lightPos);
 
+		lightSourceShader.use();
 		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, view.get());
 		glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, projection.get());
 		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, model.get());
 
+		glBindVertexArray(lightVAO);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 
 		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
