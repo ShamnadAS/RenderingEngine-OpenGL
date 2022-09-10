@@ -124,5 +124,4 @@ private:
         Right = front.cross(WorldUp).normalize();
         Up = Right.cross(front).normalize();
     }
-
 };

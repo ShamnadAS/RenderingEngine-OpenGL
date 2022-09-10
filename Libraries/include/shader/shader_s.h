@@ -2,7 +2,7 @@
 #define SHADER_H
 
 #include<glad/glad.h>
-
+#include<math/Matrices.h>
 #include<string>
 #include<fstream>
 #include<sstream>
@@ -110,6 +110,19 @@ public:
 	{
 		glUniform1f(glGetUniformLocation(ID, name.c_str()), value);
 	}
+	void setVec3(const std::string& name, Vector3& value) 
+	{
+		glUniform3f(glGetUniformLocation(ID, name.c_str()), value.x, value.y, value.z);
+	}
+	void setVec3(const std::string& name, float x, float y, float z)
+	{
+		glUniform3f(glGetUniformLocation(ID, name.c_str()), x, y, z);
+	}
+	void setMatrix4(const std::string& name, Matrix4& value) 
+	{
+		glUniformMatrix4fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, value.get());
+	}
+	
 };
 
 #endif

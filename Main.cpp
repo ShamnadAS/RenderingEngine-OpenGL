@@ -12,6 +12,9 @@ void processInput(GLFWwindow* window);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 
+const float DEG2RAD = 3.141593f / 180.0f;
+const float RAD2DEG = 180.0f / 3.141593f;
+
 //Settings
 const unsigned int scr_width = 800;
 const unsigned int scr_height = 600;
@@ -116,6 +119,13 @@ int main()
 		-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f
 	};
 
+	Vector3 cubePositions[] =
+	{
+		Vector3( 4.0f, 0.0f, 0.0f ),
+		Vector3(6.0f, 0.0f, 0.0f),
+		Vector3(8.0f, 0.0f, 0.0f),
+	};
+
 	unsigned int objectVAO, lightVAO, VBO;
 	glGenVertexArrays(1, &objectVAO);
 	glGenBuffers(1, &VBO);
@@ -207,47 +217,57 @@ int main()
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		//object attributes
-		Vector3 objectPos(4.0f, 0.0f, 0.0f);
+		Vector3 objectPos(0.0f, 0.0f, 0.0f);
 
 		//light position update
 		float lightSpeed = 0.1f;
 		float radius = 2.0f;
 
-		//set uniforms for the object
-		unsigned int materialAmbientLoc = glGetUniformLocation(lightingShader.ID, "material.ambient");
-		unsigned int materialDiffuseLoc = glGetUniformLocation(lightingShader.ID, "material.diffuse");
-		unsigned int materialSpecularLoc = glGetUniformLocation(lightingShader.ID, "material.specular");
-		unsigned int lightAmbientLoc = glGetUniformLocation(lightingShader.ID, "light.ambient");
-		unsigned int lightDiffuseLoc = glGetUniformLocation(lightingShader.ID, "light.diffuse");
-		unsigned int lightSpecularLoc = glGetUniformLocation(lightingShader.ID, "light.specular");
-		unsigned int lightPosLoc = glGetUniformLocation(lightingShader.ID, "lightPos");
-
+		//set lighting
 		lightingShader.use();
-		glUniform3f(materialAmbientLoc, 1.0f, 0.5f, 0.31f);
-		glUniform3f(materialDiffuseLoc, 1.0f, 0.5f, 0.31f);
-		glUniform3f(materialSpecularLoc, 0.5f, 0.5f, 0.5f);
+		lightingShader.setVec3("viewPos", camera.Position);
+		//material
+		lightingShader.setVec3("material.ambient", 1.0f, 0.5f, 0.31f);
+		lightingShader.setVec3("material.diffuse", 1.0f, 0.5f, 0.31f);
+		lightingShader.setVec3("material.specular", 0.5f, 0.5f, 0.5f);
 		lightingShader.setFloat("material.shininess", 16.0f);
-		glUniform3f(lightPosLoc, lightPos.x, lightPos.y, lightPos.z);
-		glUniform3f(lightAmbientLoc, 0.2f, 0.2f, 0.2f);
-		glUniform3f(lightDiffuseLoc, 1.0f, 1.0f, 1.0f);
-		glUniform3f(lightSpecularLoc, 1.0f, 1.0f, 1.0f);
+		//direction light
+		lightingShader.setVec3("dirLight.ambient", 0.2f, 0.2f, 0.2f);
+		lightingShader.setVec3("dirLight.diffuse", 1.5f, 1.5f, 1.5f);
+		lightingShader.setVec3("dirLight.specular", 1.0f, 1.0f, 1.0f);
+		lightingShader.setVec3("dirLight.direction", 0.5f, -1.0f, 0.5f);
+		//spotLight
+		lightingShader.setVec3("spotLight.ambient", 0.2f, 0.2f, 0.2f);
+		lightingShader.setVec3("spotLight.diffuse", 0.0f, 1.0f, 0.0f);
+		lightingShader.setVec3("spotLight.specular", 1.0f, 1.0f, 1.0f);
+		lightingShader.setFloat("spotLight.constant", 1.0f);
+		lightingShader.setFloat("spotLight.linear", 0.07f);
+		lightingShader.setFloat("spotLight.quadratic", 0.017f);
+		lightingShader.setFloat("spotLight.innerCutOff", cos(12.5f * DEG2RAD));
+		lightingShader.setFloat("spotLight.outerCutOff", cos(17.5f * DEG2RAD));
+		lightingShader.setVec3("spotLight.direction", camera.Front);
+		lightingShader.setVec3("spotLight.position", camera.Position);
+		//pointLight
+		lightingShader.setVec3("pointLight.ambient", 0.2f, 0.2f, 0.2f);
+		lightingShader.setVec3("pointLight.diffuse", 0.0f, 3.0f, 3.0f);
+		lightingShader.setVec3("pointLight.specular", 1.0f, 1.0f, 1.0f);
+		lightingShader.setFloat("pointLight.constant", 1.0f);
+		lightingShader.setFloat("pointLight.linear", 0.07f);
+		lightingShader.setFloat("pointLight.quadratic", 0.017f);
+		lightingShader.setVec3("pointLight.position", lightPos);
 
 		//Set up transforms
 		Matrix4 model;
 		Matrix4 view;
 		Matrix4 projection;
 
-		model.translate(Vector3(objectPos));
+		//model.translate(Vector3(objectPos));
 		view = camera.GetViewMatrix();
+		view.translate(0.0f, 0.0f, 0.0f);
 		projection = projection.perspective(camera.Zoom, (float)scr_width / (float)scr_height, 100.0f, 0.1f);
 
-		unsigned int viewLoc = glGetUniformLocation(lightingShader.ID, "view");
-		unsigned int modelLoc = glGetUniformLocation(lightingShader.ID, "model");
-		unsigned int projectionLoc = glGetUniformLocation(lightingShader.ID, "projection");
-
-		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, view.get());
-		glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, projection.get());
-		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, model.get());
+		lightingShader.setMatrix4("view", view);
+		lightingShader.setMatrix4("projection", projection);
 
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, diffuseMap);
@@ -255,21 +275,25 @@ int main()
 		glBindTexture(GL_TEXTURE_2D, specularMap);
 
 		glBindVertexArray(objectVAO);
-		glDrawArrays(GL_TRIANGLES, 0, 64);
+
+		for (int i = 0; i < 5; i++) 
+		{
+			model.rotate(20 * i, Vector3(1.0f, 0.5f, 0.3f));
+			model.translate(i + 1, i - 1, i);
+			lightingShader.setMatrix4("model", model);
+
+			glDrawArrays(GL_TRIANGLES, 0, 64);
+		}
 
 		//set up LightSource
-		viewLoc = glGetUniformLocation(lightSourceShader.ID, "view");
-		modelLoc = glGetUniformLocation(lightSourceShader.ID, "model");
-		projectionLoc = glGetUniformLocation(lightSourceShader.ID, "projection");
-		 
 		model = Matrix4().identity();
 		model.scale(0.25f, 0.25f, 0.25f);
 		model.translate(lightPos);
 
 		lightSourceShader.use();
-		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, view.get());
-		glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, projection.get());
-		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, model.get());
+		lightSourceShader.setMatrix4("view", view);
+		lightSourceShader.setMatrix4("model", model);
+		lightSourceShader.setMatrix4("projection", projection);
 
 		glBindVertexArray(lightVAO);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
@@ -303,7 +327,6 @@ void processInput(GLFWwindow* window)
 	{
 		glfwSetWindowShouldClose(window, true);
 	}
-
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 	{
 		camera.processKeyboard(FORWARD, deltaTime);

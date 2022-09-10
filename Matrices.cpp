@@ -771,7 +771,7 @@ Matrix4 Matrix4::CameraLookAt(Vector3& eye, Vector3& target, Vector3& upDir)
     // set translation part
     matrix[12] = -left.x * eye.x - left.y * eye.y - left.z * eye.z; //eye.x
     matrix[13] = -up.x * eye.x - up.y * eye.y - up.z * eye.z; //eye.y
-    matrix[14] = -forward.x * eye.x - forward.y * eye.y - forward.z * eye.z; //eye.
+    matrix[14] = -forward.x * eye.x - forward.y * eye.y - forward.z * eye.z; //eye.z
 
     return matrix;
 }
