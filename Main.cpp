@@ -31,9 +31,6 @@ float lastFrame = 0.0f;
 float lastX = 400, lastY = 300;
 bool firstMouse = true;
 
-//Lighting
-Vector3 lightPos(0.5f, 1.10f, 2.0f);
-
 int main()
 {
 	//Debug session
@@ -121,10 +118,27 @@ int main()
 
 	Vector3 cubePositions[] =
 	{
-		Vector3( 4.0f, 0.0f, 0.0f ),
-		Vector3(6.0f, 0.0f, 0.0f),
-		Vector3(8.0f, 0.0f, 0.0f),
+		Vector3( 0.0f, 0.0f, 0.0f ),
+		Vector3(-1.0f,-1.f, 1.0f ),
+		Vector3( 1.0f,-0.5f, 0.5f ),
+		Vector3( 1.0f, 0.5f,-1.0f ),
+		Vector3( 1.5f, 0.5f,-1.5f )
 	};
+	Vector3 pointLightPositions[] =
+	{
+		Vector3( 2.0f, 2.5f, 0.5f ),
+		Vector3(-2.0f, 0.5f, 1.5f ),
+		Vector3( 1.5f,-3.0f,-2.5f ),
+		Vector3(-3.0f,-4.0f, 3.5f )
+	};
+	Vector3 pointLightDiffuse[] =
+	{
+		Vector3( 1.5f, 0.0f, 0.0f ),
+		Vector3( 0.0f, 1.5f, 0.0f ),
+		Vector3( 0.0f, 0.0f, 1.5f ),
+		Vector3( 1.0f, 0.0f, 1.5f )
+	};
+
 
 	unsigned int objectVAO, lightVAO, VBO;
 	glGenVertexArrays(1, &objectVAO);
@@ -213,11 +227,8 @@ int main()
 		processInput(window);
 
 		//render
-		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		glClearColor(0.15f, 0.15f, 0.15f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		//object attributes
-		Vector3 objectPos(0.0f, 0.0f, 0.0f);
 
 		//light position update
 		float lightSpeed = 0.1f;
@@ -247,14 +258,38 @@ int main()
 		lightingShader.setFloat("spotLight.outerCutOff", cos(17.5f * DEG2RAD));
 		lightingShader.setVec3("spotLight.direction", camera.Front);
 		lightingShader.setVec3("spotLight.position", camera.Position);
-		//pointLight
-		lightingShader.setVec3("pointLight.ambient", 0.2f, 0.2f, 0.2f);
-		lightingShader.setVec3("pointLight.diffuse", 0.0f, 3.0f, 3.0f);
-		lightingShader.setVec3("pointLight.specular", 1.0f, 1.0f, 1.0f);
-		lightingShader.setFloat("pointLight.constant", 1.0f);
-		lightingShader.setFloat("pointLight.linear", 0.07f);
-		lightingShader.setFloat("pointLight.quadratic", 0.017f);
-		lightingShader.setVec3("pointLight.position", lightPos);
+		//pointLight 1
+		lightingShader.setVec3("pointLight[0].ambient", 0.2f, 0.2f, 0.2f);
+		lightingShader.setVec3("pointLight[0].diffuse", pointLightDiffuse[0]);
+		lightingShader.setVec3("pointLight[0].specular", 1.0f, 1.0f, 1.0f);
+		lightingShader.setFloat("pointLight[0].constant", 1.0f);
+		lightingShader.setFloat("pointLight[0].linear", 0.07f);
+		lightingShader.setFloat("pointLight[0].quadratic", 0.017f);
+		lightingShader.setVec3("pointLight[0].position", pointLightPositions[0]);
+		//pointLight 2
+		lightingShader.setVec3("pointLight[1].ambient", 0.2f, 0.2f, 0.2f);
+		lightingShader.setVec3("pointLight[1].diffuse", pointLightDiffuse[1]);
+		lightingShader.setVec3("pointLight[1].specular", 1.0f, 1.0f, 1.0f);
+		lightingShader.setFloat("pointLight[1].constant", 1.0f);
+		lightingShader.setFloat("pointLight[1].linear", 0.07f);
+		lightingShader.setFloat("pointLight[1].quadratic", 0.017f);
+		lightingShader.setVec3("pointLight[1].position", pointLightPositions[1]);
+		//pointLight 3
+		lightingShader.setVec3("pointLight[2].ambient", 0.2f, 0.2f, 0.2f);
+		lightingShader.setVec3("pointLight[2].diffuse", pointLightDiffuse[2]);
+		lightingShader.setVec3("pointLight[2].specular", 1.0f, 1.0f, 1.0f);
+		lightingShader.setFloat("pointLight[2].constant", 1.0f);
+		lightingShader.setFloat("pointLight[2].linear", 0.07f);
+		lightingShader.setFloat("pointLight[2].quadratic", 0.017f);
+		lightingShader.setVec3("pointLight[2].position", pointLightPositions[2]);
+		//pointLight 4
+		lightingShader.setVec3("pointLight[3].ambient", 0.2f, 0.2f, 0.2f);
+		lightingShader.setVec3("pointLight[3].diffuse", pointLightDiffuse[3]);
+		lightingShader.setVec3("pointLight[3].specular", 1.0f, 1.0f, 1.0f);
+		lightingShader.setFloat("pointLight[3].constant", 1.0f);
+		lightingShader.setFloat("pointLight[3].linear", 0.07f);
+		lightingShader.setFloat("pointLight[3].quadratic", 0.017f);
+		lightingShader.setVec3("pointLight[3].position", pointLightPositions[3]);
 
 		//Set up transforms
 		Matrix4 model;
@@ -263,7 +298,7 @@ int main()
 
 		//model.translate(Vector3(objectPos));
 		view = camera.GetViewMatrix();
-		view.translate(0.0f, 0.0f, 0.0f);
+		view.translate(0.0f, 0.0f, -3.0f);
 		projection = projection.perspective(camera.Zoom, (float)scr_width / (float)scr_height, 100.0f, 0.1f);
 
 		lightingShader.setMatrix4("view", view);
@@ -276,10 +311,10 @@ int main()
 
 		glBindVertexArray(objectVAO);
 
-		for (int i = 0; i < 5; i++) 
+		for (int i = 0; i < sizeof(cubePositions); i++) 
 		{
 			model.rotate(20 * i, Vector3(1.0f, 0.5f, 0.3f));
-			model.translate(i + 1, i - 1, i);
+			model.translate(cubePositions[i]);
 			lightingShader.setMatrix4("model", model);
 
 			glDrawArrays(GL_TRIANGLES, 0, 64);
@@ -287,16 +322,21 @@ int main()
 
 		//set up LightSource
 		model = Matrix4().identity();
-		model.scale(0.25f, 0.25f, 0.25f);
-		model.translate(lightPos);
+		model.scale(0.2f, 0.2f, 0.2f);
 
 		lightSourceShader.use();
 		lightSourceShader.setMatrix4("view", view);
-		lightSourceShader.setMatrix4("model", model);
 		lightSourceShader.setMatrix4("projection", projection);
-
+		
 		glBindVertexArray(lightVAO);
-		glDrawArrays(GL_TRIANGLES, 0, 36);
+
+		for (int i = 0; i < sizeof(pointLightPositions); i++) 
+		{
+			model.translate(pointLightPositions[i]);
+			lightSourceShader.setMatrix4("model", model);
+			lightSourceShader.setVec3("diffuse", pointLightDiffuse[i]);
+			glDrawArrays(GL_TRIANGLES, 0, 36);
+		}
 
 		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
 		glfwSwapBuffers(window);
