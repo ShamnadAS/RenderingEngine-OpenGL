@@ -85,6 +85,15 @@ int main()
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
 
+		//light properties
+		ourShader.setVec3("viewPos", camera.Position);
+
+		ourShader.setVec3("dirLight.direction", 1.0f, -1.0f, 0.0f);
+		ourShader.setVec3("dirLight.ambient", 0.2f, 0.2f, 0.2f);
+		ourShader.setVec3("dirLight.diffuse", 1.5f, 1.5f, 1.5f);
+		ourShader.setVec3("dirLight.specular", 1.0f, 1.0f, 1.0f);
+		ourShader.setFloat("material.shininess", 16.0f);
+
 		//Input
 		processInput(window);
 
@@ -106,7 +115,7 @@ int main()
 		ourShader.setMatrix4("view", view);
 		ourShader.setMatrix4("projection", projection);
 		ourShader.setMatrix4("model", model);
-
+		//Draw the loaded model
 		ourModel.Draw(ourShader);
 	
 		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
@@ -115,7 +124,7 @@ int main()
 	}
 
 	// optional: de-allocate all resources once they've outlived their purpose:
-
+ 
 	//glfw: terminate, clearing all previously allocated GLFW resources
 	glfwTerminate();
 	return 0;
