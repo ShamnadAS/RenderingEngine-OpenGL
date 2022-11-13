@@ -58,15 +58,27 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="shader.vertex">
+    <None Include="shader.vert">
       <Filter>Resource Files\Shaders</Filter>
     </None>
     <None Include="shaderLightSource.fragment">
       <Filter>Resource Files\Shaders</Filter>
     </None>
+    <None Include="screenShader.frag">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="screenShader.vert">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="skyBoxShader.vert">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="skyBoxShader.frag">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="shader.fragment">
+    <Text Include="shader.frag">
       <Filter>Resource Files\Shaders</Filter>
     </Text>
   </ItemGroup>
