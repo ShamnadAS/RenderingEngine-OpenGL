@@ -77,69 +77,39 @@ int main()
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	//build and compile our shader program
-	Shader ourShader("shader.vert", "shader.frag");
-	Shader screenShader("screenShader.vert", "screenShader.frag");
-	Shader skyboxShader("skyBoxShader.vert", "skyBoxShader.frag");
+	//Shader ourShader("shader.vert", "shader.frag", "");
 
 	//create objects, texture
-	unsigned int cube = createCube();
+	/*unsigned int cube = createCube();
 	unsigned int plane = createPlane();
-	unsigned int quad = createQuad();
 	unsigned int cubeTexture = loadTexture("resources/textures/developer.png");
-	unsigned int planeTexture = loadTexture("resources/textures/floor.png");
-
-	//uniform buffer object
-	unsigned int defVert = glGetUniformBlockIndex(ourShader.ID, "Matrices");
-	unsigned int skyBoxVert = glGetUniformBlockIndex(skyboxShader.ID, "Matrices");
-
-	glUniformBlockBinding(ourShader.ID, defVert, 2);
-	glUniformBlockBinding(skyboxShader.ID, skyBoxVert, 2);
-
-	unsigned int uboMatrices;
-	glGenBuffers(1, &uboMatrices);
-	glBindBuffer(GL_UNIFORM_BUFFER, uboMatrices);
-	glBufferData(GL_UNIFORM_BUFFER, 2 * 64, NULL, GL_STATIC_DRAW);
-	glBindBuffer(GL_UNIFORM_BUFFER, 0);
-
-	glBindBufferRange(GL_UNIFORM_BUFFER, 2, uboMatrices, 0, 2 * 64);
-
-	vector<std::string> faces
-	{
-		"resources/textures/skybox/right.jpg",
-		"resources/textures/skybox/left.jpg",
-		"resources/textures/skybox/top.jpg",
-		"resources/textures/skybox/bottom.jpg",
-		"resources/textures/skybox/front.jpg",
-		"resources/textures/skybox/back.jpg"
-	};
-	unsigned int cubemapTexture = loadCubemap(faces);
-
-	// framebuffer configuration
-	// -------------------------
-	unsigned int framebuffer;
-	glGenFramebuffers(1, &framebuffer);
-	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
-	// create a color attachment texture
-	unsigned int textureColorbuffer;
-	glGenTextures(1, &textureColorbuffer);
-	glBindTexture(GL_TEXTURE_2D, textureColorbuffer);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 800, 600, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureColorbuffer, 0);
-	// create a renderbuffer object for depth and stencil attachment (we won't be sampling these)
-	unsigned int rbo;
-	glGenRenderbuffers(1, &rbo);
-	glBindRenderbuffer(GL_RENDERBUFFER, rbo);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, 800, 600); // use a single renderbuffer object for both a depth AND stencil buffer.
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo); // now actually attach it
-	// now that we actually created the framebuffer and added all attachments we want to check if it is actually complete now
-	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-		cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << endl;
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	unsigned int planeTexture = loadTexture("resources/textures/floor.png");*/
 
 	//wireframe mode	
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	Shader gShader("gShader.vert", "gShader.geom", "gShader.frag");
+
+	//geometry shader code
+	float points[] =
+	{
+		 0.5f,  0.5f,
+		 0.5f, -0.5f,
+		-0.5f,  0.5f,
+		-0.5f, -0.5f
+	};
+
+	unsigned int pointVAO, pointVBO;
+	glGenVertexArrays(1, &pointVAO);
+	glGenBuffers(1, &pointVBO);
+	//VAO for object
+	glBindVertexArray(pointVAO);
+	glBindBuffer(GL_ARRAY_BUFFER, pointVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(points), points, GL_STATIC_DRAW);
+	//position attribute
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
+	glBindVertexArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	//Render loop
 	while (!glfwWindowShouldClose(window))
@@ -149,85 +119,59 @@ int main()
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
 
-		ourShader.use();
+		//ourShader.use();
 		//light properties
-		ourShader.setVec3("viewPos", camera.Position);
-		ourShader.setVec3("dirLight.direction", 0.0f, 0.0f, -1.0f);
-		ourShader.setVec3("dirLight.ambient", 0.2f, 0.2f, 0.2f);
-		ourShader.setVec3("dirLight.diffuse", 1.0f, 1.0f, 1.0f);
-		ourShader.setVec3("dirLight.specular", 1.0f, 1.0f, 1.0f);
-		ourShader.setFloat("material.shininess", 16.0f);
+		//ourShader.setVec3("viewPos", camera.Position);
+		//ourShader.setVec3("dirLight.direction", 0.0f, 0.0f, -1.0f);
+		//ourShader.setVec3("dirLight.ambient", 0.2f, 0.2f, 0.2f);
+		//ourShader.setVec3("dirLight.diffuse", 1.0f, 1.0f, 1.0f);
+		//ourShader.setVec3("dirLight.specular", 1.0f, 1.0f, 1.0f);
+		//ourShader.setFloat("material.shininess", 16.0f);
 
 		//Input
 		processInput(window);
 
 		//render
-		glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
 		glEnable(GL_DEPTH_TEST);
 
 		glClearColor(0.15f, 0.15f, 0.15f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
 		//Set up transforms
-		Matrix4 model;
+		/*Matrix4 model;
 		Matrix4 view;
-		Matrix4 projection;
+		Matrix4 projection;*/
 
 		//model.translate(Vector3(objectPos));
-		view = camera.GetViewMatrix();
-		projection = projection.perspective(camera.Zoom, (float)scr_width / (float)scr_height, 100.0f, 0.1f);
-
-		//set the uniform block value
-		glBindBuffer(GL_UNIFORM_BUFFER, uboMatrices);
-		glBufferSubData(GL_UNIFORM_BUFFER, 0, 64, projection.get());
-		glBufferSubData(GL_UNIFORM_BUFFER, 64, 64, view.get());
-		glBindBuffer(GL_UNIFORM_BUFFER, 0);
+		/*view = camera.GetViewMatrix();
+		projection = projection.perspective(camera.Zoom, (float)scr_width / (float)scr_height, 100.0f, 0.1f);*/
 
 		//Draw the scene
 		//ourShader.setMatrix4("view", view);
-		ourShader.setMatrix4("model", model);
+		//ourShader.setMatrix4("model", model);
 		//ourShader.setMatrix4("projection", projection);
 
 		glEnable(GL_CULL_FACE);
 
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, cubeTexture);
-		glBindVertexArray(cube);
-		glDrawArrays(GL_TRIANGLES, 0, 36);
+		//glActiveTexture(GL_TEXTURE0);
+		//glBindTexture(GL_TEXTURE_2D, cubeTexture);
+		//glBindVertexArray(cube);
+		//glDrawArrays(GL_TRIANGLES, 0, 36);
 
-		glDisable(GL_CULL_FACE);
-		
-		model.scale(2.0f);
-		model.translate(0.0f, -0.501f, 0.0f);
-		ourShader.setMatrix4("model", model);
+		//glDisable(GL_CULL_FACE);
+		//
+		//model.scale(2.0f);
+		//model.translate(0.0f, -0.501f, 0.0f);
+		//ourShader.setMatrix4("model", model);
 
-		glBindTexture(GL_TEXTURE_2D, planeTexture);
-		glBindVertexArray(plane);
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		//glBindTexture(GL_TEXTURE_2D, planeTexture);
+		//glBindVertexArray(plane);
+		//glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
-		//Draw the skybox
-		skyboxShader.use();
-		glDepthMask(GL_FALSE);
-		view[12] = view[13] = view[14] = 0;
-
-		glBindBuffer(GL_UNIFORM_BUFFER, uboMatrices);
-		glBufferSubData(GL_UNIFORM_BUFFER, 64, 64, view.get());
-		glBindBuffer(GL_UNIFORM_BUFFER, 0);
-
-		glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
-		glBindVertexArray(cube);
-		glDrawArrays(GL_TRIANGLES, 0, 36);
-		glDepthMask(GL_TRUE);
-		
-		//render the screen plane
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		glClear(GL_COLOR_BUFFER_BIT);
-		glDisable(GL_DEPTH_TEST);
-
-		screenShader.use();
-		glBindVertexArray(quad);
-		glBindTexture(GL_TEXTURE_2D, textureColorbuffer);
-		glDrawArrays(GL_TRIANGLES, 0, 6);
+		//geometry shader code
+		gShader.use();
+		glBindVertexArray(pointVAO);
+		glDrawArrays(GL_POINTS, 0, 4);
 
 		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
 		glfwSwapBuffers(window);
