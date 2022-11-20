@@ -82,7 +82,13 @@
     <None Include="gShader.frag">
       <Filter>Resource Files\Shaders</Filter>
     </None>
-    <None Include="gShader.geom">
+    <None Include="normal.geom">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="normal.vert">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="normal.frag">
       <Filter>Resource Files\Shaders</Filter>
     </None>
   </ItemGroup>

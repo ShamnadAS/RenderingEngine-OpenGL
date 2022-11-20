@@ -160,8 +160,10 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="gShader.frag" />
-    <None Include="gShader.geom" />
+    <None Include="normal.frag" />
+    <None Include="normal.geom" />
     <None Include="gShader.vert" />
+    <None Include="normal.vert" />
     <None Include="screenShader.frag" />
     <None Include="screenShader.vert" />
     <None Include="shader.vert" />

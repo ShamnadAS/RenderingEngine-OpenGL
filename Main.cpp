@@ -76,40 +76,13 @@ int main()
 
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-	//build and compile our shader program
-	//Shader ourShader("shader.vert", "shader.frag", "");
-
-	//create objects, texture
-	/*unsigned int cube = createCube();
-	unsigned int plane = createPlane();
-	unsigned int cubeTexture = loadTexture("resources/textures/developer.png");
-	unsigned int planeTexture = loadTexture("resources/textures/floor.png");*/
-
 	//wireframe mode	
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	Shader gShader("gShader.vert", "gShader.geom", "gShader.frag");
+	Shader objectShader("gShader.vert", "gShader.frag");
+	Shader normalShader("normal.vert", "normal.geom", "normal.frag");
 
-	//geometry shader code
-	float points[] =
-	{
-		 0.5f,  0.5f,
-		 0.5f, -0.5f,
-		-0.5f,  0.5f,
-		-0.5f, -0.5f
-	};
-
-	unsigned int pointVAO, pointVBO;
-	glGenVertexArrays(1, &pointVAO);
-	glGenBuffers(1, &pointVBO);
-	//VAO for object
-	glBindVertexArray(pointVAO);
-	glBindBuffer(GL_ARRAY_BUFFER, pointVBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(points), points, GL_STATIC_DRAW);
-	//position attribute
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
-	glBindVertexArray(0);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	//Load model
+	Model backPack("resources/models/backpack/backpack.obj");
 
 	//Render loop
 	while (!glfwWindowShouldClose(window))
@@ -118,15 +91,6 @@ int main()
 		float currentFrame = static_cast<float>(glfwGetTime());
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
-
-		//ourShader.use();
-		//light properties
-		//ourShader.setVec3("viewPos", camera.Position);
-		//ourShader.setVec3("dirLight.direction", 0.0f, 0.0f, -1.0f);
-		//ourShader.setVec3("dirLight.ambient", 0.2f, 0.2f, 0.2f);
-		//ourShader.setVec3("dirLight.diffuse", 1.0f, 1.0f, 1.0f);
-		//ourShader.setVec3("dirLight.specular", 1.0f, 1.0f, 1.0f);
-		//ourShader.setFloat("material.shininess", 16.0f);
 
 		//Input
 		processInput(window);
@@ -138,40 +102,27 @@ int main()
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
 		//Set up transforms
-		/*Matrix4 model;
+		Matrix4 model;
 		Matrix4 view;
-		Matrix4 projection;*/
+		Matrix4 projection;
 
-		//model.translate(Vector3(objectPos));
-		/*view = camera.GetViewMatrix();
-		projection = projection.perspective(camera.Zoom, (float)scr_width / (float)scr_height, 100.0f, 0.1f);*/
+		view = camera.GetViewMatrix();
+		projection = projection.perspective(camera.Zoom, (float)scr_width / (float)scr_height, 100.0f, 0.1f);
 
 		//Draw the scene
-		//ourShader.setMatrix4("view", view);
-		//ourShader.setMatrix4("model", model);
-		//ourShader.setMatrix4("projection", projection);
+		objectShader.use();
+		objectShader.setMatrix4("view", view);
+		objectShader.setMatrix4("model", model);
+		objectShader.setMatrix4("projection", projection);
+		backPack.Draw(objectShader);
+		
+		normalShader.use();
+		normalShader.setMatrix4("view", view);
+		normalShader.setMatrix4("model", model);
+		normalShader.setMatrix4("projection", projection);
+		backPack.Draw(normalShader);
 
 		glEnable(GL_CULL_FACE);
-
-		//glActiveTexture(GL_TEXTURE0);
-		//glBindTexture(GL_TEXTURE_2D, cubeTexture);
-		//glBindVertexArray(cube);
-		//glDrawArrays(GL_TRIANGLES, 0, 36);
-
-		//glDisable(GL_CULL_FACE);
-		//
-		//model.scale(2.0f);
-		//model.translate(0.0f, -0.501f, 0.0f);
-		//ourShader.setMatrix4("model", model);
-
-		//glBindTexture(GL_TEXTURE_2D, planeTexture);
-		//glBindVertexArray(plane);
-		//glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
-		//geometry shader code
-		gShader.use();
-		glBindVertexArray(pointVAO);
-		glDrawArrays(GL_POINTS, 0, 4);
 
 		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
 		glfwSwapBuffers(window);
