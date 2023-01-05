@@ -59,9 +59,11 @@ public:
 		glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
 		glBindVertexArray(0);
 	}
+	unsigned int VAO;
+
 private:
 	// render data
-	unsigned int VAO, VBO, EBO;
+	unsigned int VBO, EBO;
 	void setupMesh()
 	{
 		glGenVertexArrays(1, &VAO);

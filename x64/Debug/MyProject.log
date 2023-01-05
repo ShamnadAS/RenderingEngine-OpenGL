@@ -1,10 +1,10 @@
 ﻿  Main.cpp
 C:\Users\Shamnad\Documents\GitHub\RenderingEngine-OpenGL\Libraries\include\mesh.h(53,59): warning C4244: 'argument': conversion from 'unsigned int' to 'float', possible loss of data
 C:\Users\Shamnad\Documents\GitHub\RenderingEngine-OpenGL\Libraries\include\mesh.h(59,1): warning C4267: 'argument': conversion from 'size_t' to 'GLsizei', possible loss of data
-C:\Users\Shamnad\Documents\GitHub\RenderingEngine-OpenGL\Main.cpp(175,11): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-C:\Users\Shamnad\Documents\GitHub\RenderingEngine-OpenGL\Main.cpp(176,11): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-C:\Users\Shamnad\Documents\GitHub\RenderingEngine-OpenGL\Main.cpp(180,16): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-C:\Users\Shamnad\Documents\GitHub\RenderingEngine-OpenGL\Main.cpp(181,16): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-C:\Users\Shamnad\Documents\GitHub\RenderingEngine-OpenGL\Main.cpp(182,10): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-C:\Users\Shamnad\Documents\GitHub\RenderingEngine-OpenGL\Main.cpp(183,10): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\Shamnad\Documents\GitHub\RenderingEngine-OpenGL\Main.cpp(179,11): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\Shamnad\Documents\GitHub\RenderingEngine-OpenGL\Main.cpp(180,11): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\Shamnad\Documents\GitHub\RenderingEngine-OpenGL\Main.cpp(184,16): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\Shamnad\Documents\GitHub\RenderingEngine-OpenGL\Main.cpp(185,16): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\Shamnad\Documents\GitHub\RenderingEngine-OpenGL\Main.cpp(186,10): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\Shamnad\Documents\GitHub\RenderingEngine-OpenGL\Main.cpp(187,10): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
   MyProject.vcxproj -> C:\Users\Shamnad\Documents\GitHub\RenderingEngine-OpenGL\x64\Debug\MyProject.exe

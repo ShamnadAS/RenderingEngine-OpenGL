@@ -41,11 +41,12 @@ int main()
 {
 	//Debug session
 
-	//	//glfw: initialize and configure
+	//glfw: initialize and configure
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	glfwWindowHint(GLFW_SAMPLES, 16); //anti-aliasing mssa
 
 	//glfw window creation
 	GLFWwindow* window = glfwCreateWindow(scr_width, scr_height, "MyWindow", NULL, NULL);
@@ -78,11 +79,8 @@ int main()
 
 	//wireframe mode	
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	Shader objectShader("gShader.vert", "gShader.frag");
-	Shader normalShader("normal.vert", "normal.geom", "normal.frag");
-
-	//Load model
-	Model backPack("resources/models/backpack/backpack.obj");
+	Shader myShader ("shader.vert", "shader.frag");
+	unsigned int myCube = createCube();
 
 	//Render loop
 	while (!glfwWindowShouldClose(window))
@@ -108,21 +106,27 @@ int main()
 
 		view = camera.GetViewMatrix();
 		projection = projection.perspective(camera.Zoom, (float)scr_width / (float)scr_height, 100.0f, 0.1f);
+		model.scale(0.5f);
 
-		//Draw the scene
-		objectShader.use();
-		objectShader.setMatrix4("view", view);
-		objectShader.setMatrix4("model", model);
-		objectShader.setMatrix4("projection", projection);
-		backPack.Draw(objectShader);
+		myShader.use();
+		myShader.setMatrix4("model", model);
+		myShader.setMatrix4("view", view);
+		myShader.setMatrix4("projection", projection);
 		
-		normalShader.use();
-		normalShader.setMatrix4("view", view);
-		normalShader.setMatrix4("model", model);
-		normalShader.setMatrix4("projection", projection);
-		backPack.Draw(normalShader);
+		myShader.setFloat("colorValue", 0.5f);
+		glBindVertexArray(myCube);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+		
+		myShader.setFloat("colorValue", 1.0f);
+		model.translate(1.0f, 0.0f, 0.0f);
+		myShader.setMatrix4("model", model);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
 
-		glEnable(GL_CULL_FACE);
+		myShader.setFloat("colorValue", pow(0.5f, 1.0f/2.2f));
+		model.translate(1.0f, 0.0f, 0.0f);
+		myShader.setMatrix4("model", model);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+
 
 		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
 		glfwSwapBuffers(window);
@@ -130,7 +134,7 @@ int main()
 	}
 
 	// optional: de-allocate all resources once they've outlived their purpose:
- 
+
 	//glfw: terminate, clearing all previously allocated GLFW resources
 	glfwTerminate();
 	return 0;
@@ -262,7 +266,7 @@ unsigned int loadCubemap(vector<std::string> faces)
 	return textureID;
 }
 
-unsigned int createCube() 
+unsigned int createCube()
 {
 	float cubeVertices[] = {
 		// positions          // normals           // texture coords
@@ -323,14 +327,14 @@ unsigned int createCube()
 	glEnableVertexAttribArray(1);
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
 	glEnableVertexAttribArray(2);
-	
+
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	return VAO;
 }
 
-unsigned int createPlane() 
+unsigned int createPlane()
 {
 	float planeVertices[] =
 	{
@@ -371,17 +375,17 @@ unsigned int createPlane()
 	return VAO;
 }
 
-unsigned int createQuad() 
+unsigned int createQuad()
 {
 	float quadVertices[] = { // vertex attributes for a quad that fills the entire screen in Normalized Device Coordinates.
 	  // positions   // texCoords
-	  -1.0f,  1.0f,  0.0f, 1.0f,
-	  -1.0f, -1.0f,  0.0f, 0.0f,
-	   1.0f, -1.0f,  1.0f, 0.0f,
+	  -0.05f,  0.05f,  0.0f, 1.0f,
+	  -0.05f, -0.05f,  0.0f, 0.0f,
+	   0.05f, -0.05f,  1.0f, 0.0f,
 
-	  -1.0f,  1.0f,  0.0f, 1.0f,
-	   1.0f, -1.0f,  1.0f, 0.0f,
-	   1.0f,  1.0f,  1.0f, 1.0f
+	  -0.05f,  0.05f,  0.0f, 1.0f,
+	   0.05f, -0.05f,  1.0f, 0.0f,
+	   0.05f,  0.05f,  1.0f, 1.0f
 	};
 
 	unsigned int VAO, VBO;
@@ -397,4 +401,3 @@ unsigned int createQuad()
 
 	return VAO;
 }
-  

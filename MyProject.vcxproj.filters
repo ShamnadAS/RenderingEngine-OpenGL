@@ -61,36 +61,6 @@
     <None Include="shader.vert">
       <Filter>Resource Files\Shaders</Filter>
     </None>
-    <None Include="shaderLightSource.fragment">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="screenShader.frag">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="screenShader.vert">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="skyBoxShader.vert">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="skyBoxShader.frag">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="gShader.vert">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="gShader.frag">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="normal.geom">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="normal.vert">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="normal.frag">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <Text Include="shader.frag">
