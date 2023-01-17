@@ -7,7 +7,7 @@
 #include <math.h>
 
 // Default camera values
-const float YAW = 0.0f;
+const float YAW = -90.0f;
 const float PITCH = 0.0f;
 const float SPEED = 2.5f;
 const float SENSITIVITY = 0.01f;
@@ -116,9 +116,9 @@ private:
     {
         //calculate new front vector
         Vector3 front;
-        front.x =  cosf(Yaw) * cosf(Pitch);
-        front.y =  sinf(Pitch);
-        front.z =  sinf(Yaw) * cosf(Pitch);
+        front.x =  cosf(Yaw * DEG2RAD) * cosf(Pitch * DEG2RAD);
+        front.y =  sinf(Pitch * DEG2RAD);
+        front.z =  sinf(Yaw * DEG2RAD) * cosf(Pitch * DEG2RAD);
         Front = front.normalize();
         //recalculate right and up vectors
         Right = front.cross(WorldUp).normalize();
