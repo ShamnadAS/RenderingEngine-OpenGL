@@ -80,12 +80,12 @@ int main()
 	Shader myShader ("shader.vert", "shader.frag");
 
 	//texture loading
-	unsigned int brickWallColor = loadTexture("resources/textures/brickwall.jpg");
-	unsigned int brickWallNormal = loadTexture("resources/textures/brickwall_normal.jpg");
-	myShader.use();
-	myShader.setInt("material.texture_diffuse1", 0);
-	myShader.setInt("material.texture_normal1", 1);
-	Model laptop("resources/models/79-obj/obj/Lowpoly_Notebook_2.obj");
+	//unsigned int brickWallColor = loadTexture("resources/textures/brickwall.jpg");
+	//unsigned int brickWallNormal = loadTexture("resources/textures/brickwall_normal.jpg");
+	//myShader.use();
+	//myShader.setInt("material.texture_diffuse1", 0);
+	//myShader.setInt("material.texture_normal1", 1);
+	Model laptop("resources/models/cyborg/cyborg.obj");
 
 	//camera and light position
 	camera.Position = Vector3(0.0f, 0.0f, 3.0f);
@@ -115,7 +115,9 @@ int main()
 
 		view = camera.GetViewMatrix();
 		projection = projection.perspective(camera.Zoom, (float)scr_width / (float)scr_height, 100.0f, 0.1f);
-		//model.rotateY(sin(glfwGetTime() * 0.1f) * 180);
+		view.translate(0.0f, 0.0f, -2.0f);
+		model.rotateY(glfwGetTime() * 10.0f);
+		model.translate(0.0f, -2.0f, 0.0f);
 
 		myShader.use();
 		myShader.setMatrix4("model", model);
@@ -126,10 +128,10 @@ int main()
 		
 		laptop.Draw(myShader);
 		//draw the object
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, brickWallColor);
-		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, brickWallNormal);
+		//glActiveTexture(GL_TEXTURE0);
+		//glBindTexture(GL_TEXTURE_2D, brickWallColor);
+		//glActiveTexture(GL_TEXTURE1);
+		//glBindTexture(GL_TEXTURE_2D, brickWallNormal);
 		//renderQuad();
 
 		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)

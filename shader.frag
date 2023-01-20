@@ -18,8 +18,6 @@ struct Material
     sampler2D texture_specular1;
 };
 
-//uniform sampler2D texture_diffuse;
-//uniform sampler2D texture_normal;
 uniform Material material;
 
 void main()
@@ -27,7 +25,7 @@ void main()
     //point lighting
     vec3 color = texture(material.texture_diffuse1, fs_in.TexCoords).rgb;
     //ambient
-    vec3 ambient = color * 0.5;
+    vec3 ambient = color * 1.0;
     //diffuse
     vec3 lightDir = normalize(fs_in.TangentLightPos - fs_in.TangentFragPos);
     vec3 normal = texture(material.texture_normal1, fs_in.TexCoords).rgb;
@@ -36,8 +34,8 @@ void main()
     vec3 diffuse = color * diff;
     //specular
     vec3 viewDir = normalize(fs_in.TangentViewPos - fs_in.TangentFragPos);
-    float spec =  pow(max(dot(normal, viewDir), 0.0), 64);
-    vec3 specular = vec3(0.2) * spec;
+    float spec =  pow(max(dot(normal, viewDir), 0.0), 32);
+    vec3 specular = texture(material.texture_specular1, fs_in.TexCoords).rgb * spec;
 
     vec3 result = ambient + diffuse + specular;
     FragColor = vec4(result, 1.0);
