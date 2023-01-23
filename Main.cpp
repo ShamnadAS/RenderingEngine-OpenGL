@@ -18,6 +18,7 @@ unsigned int createCube();
 unsigned int createPlane();
 unsigned int createQuad();
 void renderQuad();
+void renderScene(Shader& shader, Vector3 cubePositions[]);
 
 //Settings
 const unsigned int scr_width = 800;
@@ -34,6 +35,12 @@ float lastFrame = 0.0f;
 //Mouse Input
 float lastX = 400, lastY = 300;
 bool firstMouse = true;
+
+//meshes
+unsigned int planeVAO;
+unsigned int cubeVAO;
+unsigned int cubeTexture;
+unsigned int planeTexture;
 
 int main()
 {
@@ -70,6 +77,7 @@ int main()
 	//config global openGL state
 	glDepthFunc(GL_LEQUAL);
 	glEnable(GL_BLEND);
+	glEnable(GL_DEPTH_TEST);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_PROGRAM_POINT_SIZE);
 
@@ -77,19 +85,65 @@ int main()
 
 	//wireframe mode	
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	Shader myShader ("shader.vert", "shader.frag");
+	Shader shader ("shader.vert", "shader.frag");
+	Shader sourceShader("sourceShader.vert", "sourceShader.frag");
+	Shader depthShader("depthShader.vert", "depthShader.frag");
+	Shader screenShader("screenShader.vert", "screenShader.frag");
 
-	//texture loading
-	//unsigned int brickWallColor = loadTexture("resources/textures/brickwall.jpg");
-	//unsigned int brickWallNormal = loadTexture("resources/textures/brickwall_normal.jpg");
-	//myShader.use();
-	//myShader.setInt("material.texture_diffuse1", 0);
-	//myShader.setInt("material.texture_normal1", 1);
-	Model laptop("resources/models/cyborg/cyborg.obj");
+	planeTexture = loadTexture("resources/textures/cube.png");
+	cubeTexture = loadTexture("resources/textures/floor.png");
+	shader.use();
+	shader.setInt("material.texture_diffuse", 0);
+	cubeVAO = createCube();
+	planeVAO = createPlane();
+	unsigned int quad = createQuad();
+
+	Vector3 cubePositions[]
+	{
+		Vector3(1.0f, 0.0f, 1.0f),
+		Vector3(2.0f, 1.0f, 2.0f),
+		Vector3(0.0f, 1.0f, 0.0f)
+	};
 
 	//camera and light position
 	camera.Position = Vector3(0.0f, 0.0f, 3.0f);
-	Vector3 lightPos(3.0f, 1.0f, 2.0f);
+	Vector3 lightPos(0.1f, 6.0f, 0.0f);
+	
+	//frame buffer - depth map
+	unsigned int depthMapFBO;
+	glGenFramebuffers(1, &depthMapFBO);
+
+	const unsigned int SHADOW_WIDTH = 1024, SHADOW_HEIGHT = 1024;
+	unsigned int depthMap;
+	glGenTextures(1, &depthMap);
+	glBindTexture(GL_TEXTURE_2D, depthMap);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, SHADOW_WIDTH, 
+    SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+	float borderColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+	glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthMap, 0);
+	glDrawBuffer(GL_NONE);
+	glReadBuffer(GL_NONE);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	//lightspace matrix
+	float near_plane = 1.0f, far_plane = 20.0f;
+	Matrix4 lightProjection = Matrix4().orthographic(-10.0f, 10.0f, -10.0f, 10.0f,
+	                          far_plane, near_plane);
+	Vector3 position = lightPos;
+	Vector3 target(0, 0, 0);
+	Vector3 up(0, 1, 0);
+	Matrix4 lightView = Matrix4().CameraLookAt(position, target, up);
+	Matrix4 lightSpaceMatrix = lightProjection * lightView;
+	shader.use();
+	shader.setMatrix4("lightSpaceMatrix", lightSpaceMatrix);
+	shader.setInt("shadowMap", 1);
 
 	//Render loop 
 	while (!glfwWindowShouldClose(window))
@@ -103,8 +157,6 @@ int main()
 		processInput(window);
 
 		//render
-		glEnable(GL_DEPTH_TEST);
-
 		glClearColor(0.15f, 0.15f, 0.15f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
@@ -113,26 +165,53 @@ int main()
 		Matrix4 view;
 		Matrix4 projection;
 
+		//pass 1
+		depthShader.use();
+		depthShader.setMatrix4("lightSpaceMatrix", lightSpaceMatrix);
+		glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
+		glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
+		glClear(GL_DEPTH_BUFFER_BIT);
+		glCullFace(GL_FRONT);
+		renderScene(depthShader, cubePositions);
+		glCullFace(GL_BACK);
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		//pass 2
+		// reset viewport
+		glViewport(0, 0, 800, 600);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		/*screenShader.use();
+		screenShader.setInt("depthMap", 0);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, depthMap);
+		glBindVertexArray(quad);
+		glDrawArrays(GL_TRIANGLES, 0, 6);*/
+		
 		view = camera.GetViewMatrix();
 		projection = projection.perspective(camera.Zoom, (float)scr_width / (float)scr_height, 100.0f, 0.1f);
-		view.translate(0.0f, 0.0f, -2.0f);
-		model.rotateY(glfwGetTime() * 10.0f);
-		model.translate(0.0f, -2.0f, 0.0f);
-
-		myShader.use();
-		myShader.setMatrix4("model", model);
-		myShader.setMatrix4("view", view);
-		myShader.setMatrix4("projection", projection);
-		myShader.setVec3("viewPos", camera.Position);
-		myShader.setVec3("lightPos", lightPos);
-		
-		laptop.Draw(myShader);
-		//draw the object
-		//glActiveTexture(GL_TEXTURE0);
-		//glBindTexture(GL_TEXTURE_2D, brickWallColor);
-		//glActiveTexture(GL_TEXTURE1);
-		//glBindTexture(GL_TEXTURE_2D, brickWallNormal);
-		//renderQuad();
+		shader.use();
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, depthMap);
+		shader.setMatrix4("view", view);
+		shader.setMatrix4("projection", projection);
+		shader.setVec3("viewPos", camera.Position);
+		shader.setVec3("lightPos", lightPos);
+		//draw the objects
+		renderScene(shader,cubePositions);
+		//draw light source
+		sourceShader.use();
+		model.identity();
+		model.scale(0.25f);
+		model.translate(lightPos);
+		sourceShader.setMatrix4("model", model);
+		sourceShader.setMatrix4("view", view);
+		sourceShader.setMatrix4("projection", projection);
+		glBindVertexArray(cubeVAO);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+		model.identity();
+		model.scale(0.1f);
+		sourceShader.setMatrix4("model", model);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
 
 		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
 		glfwSwapBuffers(window);
@@ -145,6 +224,32 @@ int main()
 	glfwTerminate();
 	return 0;
 
+}
+
+void renderScene(Shader &shader, Vector3 cubePositions[]) 
+{
+	shader.use();
+	Matrix4 model;
+	glBindVertexArray(cubeVAO);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, cubeTexture);
+	for (int i = 0; i < 3; i++)
+	{
+		model.identity();
+		model.scale(0.5f);
+		model.rotateZ(50 * i);
+		model.translate(cubePositions[i]);
+
+		shader.setMatrix4("model", model);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+	}
+	model.identity();
+	model.scale(3.0f);
+	model.translate(0.0f, -0.5f, 0.0f);
+	shader.setMatrix4("model", model);
+	glBindTexture(GL_TEXTURE_2D, planeTexture);
+	glBindVertexArray(planeVAO);
+	glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes
@@ -327,12 +432,12 @@ unsigned int createCube()
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertices), cubeVertices, GL_STATIC_DRAW);
 	//position attribute
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
 	glEnableVertexAttribArray(2);
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
 
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -385,13 +490,13 @@ unsigned int createQuad()
 {
 	float quadVertices[] = { // vertex attributes for a quad that fills the entire screen in Normalized Device Coordinates.
 	  // positions   // texCoords
-	  -0.05f,  0.05f,  0.0f, 1.0f,
-	  -0.05f, -0.05f,  0.0f, 0.0f,
-	   0.05f, -0.05f,  1.0f, 0.0f,
+	  -1.0f,  1.0f,  0.0f, 1.0f,
+	  -1.0f, -1.0f,  0.0f, 0.0f,
+	   1.0f, -1.0f,  1.0f, 0.0f,
 
-	  -0.05f,  0.05f,  0.0f, 1.0f,
-	   0.05f, -0.05f,  1.0f, 0.0f,
-	   0.05f,  0.05f,  1.0f, 1.0f
+	  -1.0f,  1.0f,  0.0f, 1.0f,
+	   1.0f, -1.0f,  1.0f, 0.0f,
+	   1.0f,  1.0f,  1.0f, 1.0f
 	};
 
 	unsigned int VAO, VBO;

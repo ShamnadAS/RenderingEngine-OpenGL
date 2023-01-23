@@ -61,6 +61,24 @@
     <None Include="shader.vert">
       <Filter>Resource Files\Shaders</Filter>
     </None>
+    <None Include="sourceShader.vert">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="sourceShader.frag">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="depthShader.vert">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="depthShader.frag">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="screenShader.vert">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="screenShader.frag">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Text Include="shader.frag">

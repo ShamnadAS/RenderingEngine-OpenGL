@@ -210,6 +210,7 @@ public:
     //projection matrix
     Matrix4    perspective(float left, float right, float top, float bottom, float far , float near);
     Matrix4    perspective(float fov, float aspectRatio, float far, float near);
+    Matrix4    orthographic(float left, float right, float top, float bottom, float far, float near);
     //@@Matrix4&    skew(float angle, const Vector3& axis); //
 
     // operators

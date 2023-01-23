@@ -856,4 +856,16 @@ Matrix4 Matrix4::perspective(float fov, float aspectRatio, float f, float n)
     return perspective(-r, r, t, -t, f, n);
 }
 
+Matrix4 Matrix4::orthographic(float l, float r, float t, float b, float f, float n) 
+{
+    Matrix4 matrix;
+    matrix[0] = 2 / (r - l);
+    matrix[5] = 2 / (t - b);
+    matrix[10] = -2 / (f - n);
+    matrix[12] = -(r + l) / (r - l);
+    matrix[13] = -(t + b) / (t - b);
+    matrix[14] = -(f + n) / (f - n);
+    return matrix;
+}
+
 
