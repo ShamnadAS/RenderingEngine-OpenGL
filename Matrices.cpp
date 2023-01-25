@@ -734,7 +734,7 @@ Matrix4& Matrix4::lookAt(float tx, float ty, float tz, float ux, float uy, float
     return lookAt(Vector3(tx, ty, tz), Vector3(ux, uy, uz));
 }
 
-Matrix4 Matrix4::CameraLookAt(Vector3& eye, Vector3& target, Vector3& upDir)
+Matrix4 Matrix4::CameraLookAt(Vector3 eye, Vector3 target, Vector3 upDir)
 {
     // compute the forward vector from target to eye
     Vector3 forward = eye - target;
