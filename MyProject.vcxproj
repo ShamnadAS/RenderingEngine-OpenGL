@@ -160,7 +160,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="depthShader.frag" />
-    <None Include="depthShader.geom" />
     <None Include="depthShader.vert" />
     <None Include="screenShader.frag" />
     <None Include="screenShader.vert" />

@@ -79,9 +79,6 @@
     <None Include="screenShader.frag">
       <Filter>Resource Files\Shaders</Filter>
     </None>
-    <None Include="depthShader.geom">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <Text Include="shader.frag">

@@ -87,78 +87,63 @@ int main()
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	Shader shader ("shader.vert", "shader.frag");
 	Shader sourceShader("sourceShader.vert", "sourceShader.frag");
-	Shader depthShader("depthShader.vert", "depthShader.geom", "depthShader.frag");
+	Shader depthShader("depthShader.vert", "depthShader.frag");
 	Shader screenShader("screenShader.vert", "screenShader.frag");
 
 	planeTexture = loadTexture("resources/textures/cube.png");
 	cubeTexture = loadTexture("resources/textures/floor.png");
 	shader.use();
 	shader.setInt("material.texture_diffuse", 0);
-	shader.setInt("depthMap", 1);
 	cubeVAO = createCube();
 	planeVAO = createPlane();
 	unsigned int quad = createQuad();
 
 	Vector3 cubePositions[]
 	{
-		Vector3(1.5f, 0.0f, 1.0f),
-		Vector3(1.5f, 1.0f, 1.0f),
-		Vector3(0.0f, 1.5f, 0.0f)
+		Vector3(1.0f, 0.0f, 1.0f),
+		Vector3(2.0f, 1.0f, 2.0f),
+		Vector3(0.0f, 1.0f, 0.0f)
 	};
 
 	//camera and light position
-	camera.Position = Vector3(0.0f, 0.0f, 1.0f);
-	Vector3 lightPos(0.0f, 0.0f, 0.0f);
+	camera.Position = Vector3(0.0f, 0.0f, 3.0f);
+	Vector3 lightPos(0.1f, 6.0f, 0.0f);
 	
 	//frame buffer - depth map
 	unsigned int depthMapFBO;
 	glGenFramebuffers(1, &depthMapFBO);
 
-	unsigned int depthCubemap;
-	glGenTextures(1, &depthCubemap);
 	const unsigned int SHADOW_WIDTH = 1024, SHADOW_HEIGHT = 1024;
-	glBindTexture(GL_TEXTURE_CUBE_MAP, depthCubemap);
-	for (unsigned int i = 0; i < 6; ++i)
-	{
-		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_DEPTH_COMPONENT,
-			SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT,GL_FLOAT, NULL);
-	}
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+	unsigned int depthMap;
+	glGenTextures(1, &depthMap);
+	glBindTexture(GL_TEXTURE_2D, depthMap);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, SHADOW_WIDTH, 
+    SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+	float borderColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+	glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
-	glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, depthCubemap, 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthMap, 0);
 	glDrawBuffer(GL_NONE);
 	glReadBuffer(GL_NONE);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	//lightspace matrix
-	float aspect = (float)SHADOW_WIDTH / (float)SHADOW_HEIGHT;
-	float near = 1.0f;
-	float far = 25.0f;
-	Matrix4 shadowProj = Matrix4().perspective(90.0f, aspect, far, near);
-	std::vector<Matrix4> shadowTransforms;
-	shadowTransforms.push_back(shadowProj *
-		Matrix4().CameraLookAt(lightPos, lightPos + Vector3(1.0, 0.0, 0.0)
-        , Vector3(0.0, -1.0, 0.0)));
-	shadowTransforms.push_back(shadowProj *
-		Matrix4().CameraLookAt(lightPos, lightPos + Vector3(-1.0, 0.0, 0.0)
-	    , Vector3(0.0, -1.0, 0.0)));
-	shadowTransforms.push_back(shadowProj *
-		Matrix4().CameraLookAt(lightPos, lightPos + Vector3(0.0, 1.0, 0.0)
-		, Vector3(0.0, 0.0, 1.0)));
-	shadowTransforms.push_back(shadowProj *
-		Matrix4().CameraLookAt(lightPos, lightPos + Vector3(0.0, -1.0, 0.0)
-		, Vector3(0.0, 0.0, -1.0)));
-	shadowTransforms.push_back(shadowProj *
-		Matrix4().CameraLookAt(lightPos, lightPos + Vector3(0.0, 0.0, 1.0)
-		, Vector3(0.0, -1.0, 0.0)));
-	shadowTransforms.push_back(shadowProj *
-		Matrix4().CameraLookAt(lightPos, lightPos + Vector3(0.0, 0.0, -1.0)
-		, Vector3(0.0, -1.0, 0.0)));
+	float near_plane = 1.0f, far_plane = 20.0f;
+	Matrix4 lightProjection = Matrix4().orthographic(-10.0f, 10.0f, -10.0f, 10.0f,
+	                          far_plane, near_plane);
+	Vector3 position = lightPos;
+	Vector3 target(0, 0, 0);
+	Vector3 up(0, 1, 0);
+	Matrix4 lightView = Matrix4().CameraLookAt(position, target, up);
+	Matrix4 lightSpaceMatrix = lightProjection * lightView;
+	shader.use();
+	shader.setMatrix4("lightSpaceMatrix", lightSpaceMatrix);
+	shader.setInt("shadowMap", 1);
 
 	//Render loop 
 	while (!glfwWindowShouldClose(window))
@@ -182,34 +167,35 @@ int main()
 
 		//pass 1
 		depthShader.use();
-		depthShader.setMatrix4("shadowMatrices[0]", shadowTransforms[0]);
-		depthShader.setMatrix4("shadowMatrices[1]", shadowTransforms[1]);
-		depthShader.setMatrix4("shadowMatrices[2]", shadowTransforms[2]);
-		depthShader.setMatrix4("shadowMatrices[3]", shadowTransforms[3]);
-		depthShader.setMatrix4("shadowMatrices[4]", shadowTransforms[4]);
-		depthShader.setMatrix4("shadowMatrices[5]", shadowTransforms[5]);
-		depthShader.setFloat("far_plane", far);
-		depthShader.setVec3("lightPos", lightPos);
-
+		depthShader.setMatrix4("lightSpaceMatrix", lightSpaceMatrix);
 		glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
 		glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
 		glClear(GL_DEPTH_BUFFER_BIT);
+		glCullFace(GL_FRONT);
 		renderScene(depthShader, cubePositions);
+		glCullFace(GL_BACK);
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		//pass 2
 		// reset viewport
 		glViewport(0, 0, 800, 600);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		/*screenShader.use();
+		screenShader.setInt("depthMap", 0);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, depthMap);
+		glBindVertexArray(quad);
+		glDrawArrays(GL_TRIANGLES, 0, 6);*/
+		
 		view = camera.GetViewMatrix();
 		projection = projection.perspective(camera.Zoom, (float)scr_width / (float)scr_height, 100.0f, 0.1f);
 		shader.use();
 		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_CUBE_MAP, depthCubemap);
+		glBindTexture(GL_TEXTURE_2D, depthMap);
 		shader.setMatrix4("view", view);
 		shader.setMatrix4("projection", projection);
 		shader.setVec3("viewPos", camera.Position);
 		shader.setVec3("lightPos", lightPos);
-		shader.setFloat("far_plane", far);
 		//draw the objects
 		renderScene(shader,cubePositions);
 		//draw light source
@@ -257,14 +243,13 @@ void renderScene(Shader &shader, Vector3 cubePositions[])
 		shader.setMatrix4("model", model);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 	}
-	shader.setInt("flipNormal", 1);
 	model.identity();
-	model.scale(5.0f);
+	model.scale(3.0f);
+	model.translate(0.0f, -0.5f, 0.0f);
 	shader.setMatrix4("model", model);
 	glBindTexture(GL_TEXTURE_2D, planeTexture);
-	glBindVertexArray(cubeVAO);
-	glDrawArrays(GL_TRIANGLES, 0, 36);
-	shader.setInt("flipNormal", 0);
+	glBindVertexArray(planeVAO);
+	glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes
