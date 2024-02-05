@@ -11,6 +11,7 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
+void renderSphere();
 
 const float DEG2RAD = 3.141593f / 180.0f;
 const float RAD2DEG = 180.0f / 3.141593f;
@@ -69,6 +70,7 @@ int main()
 	//build and compile our shader program
 	Shader lightingShader("shader.vertex", "shader.fragment");
 	Shader lightSourceShader("shader.vertex", "shaderLightSource.fragment");
+	Shader pbrShader("pbr.vertex", "pbr.fragment");
 
 	//set up vertex data (and buffer(s)) and configure vertex attributes
 	float vertices[] = {
@@ -138,7 +140,6 @@ int main()
 		Vector3( 0.0f, 0.0f, 1.5f ),
 		Vector3( 1.0f, 0.0f, 1.5f )
 	};
-
 
 	unsigned int objectVAO, lightVAO, VBO;
 	glGenVertexArrays(1, &objectVAO);
@@ -213,7 +214,7 @@ int main()
 	lightingShader.setInt("material.specular", 1);
 	
 	//wireframe mode	
-	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 	//Render loop
 	while (!glfwWindowShouldClose(window))
@@ -230,67 +231,7 @@ int main()
 		glClearColor(0.15f, 0.15f, 0.15f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		//light position update
-		float lightSpeed = 0.1f;
-		float radius = 2.0f;
-
-		//set lighting
-		lightingShader.use();
-		lightingShader.setVec3("viewPos", camera.Position);
-		//material
-		lightingShader.setVec3("material.ambient", 1.0f, 0.5f, 0.31f);
-		lightingShader.setVec3("material.diffuse", 1.0f, 0.5f, 0.31f);
-		lightingShader.setVec3("material.specular", 0.5f, 0.5f, 0.5f);
-		lightingShader.setFloat("material.shininess", 16.0f);
-		//direction light
-		lightingShader.setVec3("dirLight.ambient", 0.2f, 0.2f, 0.2f);
-		lightingShader.setVec3("dirLight.diffuse", 1.5f, 1.5f, 1.5f);
-		lightingShader.setVec3("dirLight.specular", 1.0f, 1.0f, 1.0f);
-		lightingShader.setVec3("dirLight.direction", 0.5f, -1.0f, 0.5f);
-		//spotLight
-		lightingShader.setVec3("spotLight.ambient", 0.2f, 0.2f, 0.2f);
-		lightingShader.setVec3("spotLight.diffuse", 0.0f, 1.0f, 0.0f);
-		lightingShader.setVec3("spotLight.specular", 1.0f, 1.0f, 1.0f);
-		lightingShader.setFloat("spotLight.constant", 1.0f);
-		lightingShader.setFloat("spotLight.linear", 0.07f);
-		lightingShader.setFloat("spotLight.quadratic", 0.017f);
-		lightingShader.setFloat("spotLight.innerCutOff", cos(12.5f * DEG2RAD));
-		lightingShader.setFloat("spotLight.outerCutOff", cos(17.5f * DEG2RAD));
-		lightingShader.setVec3("spotLight.direction", camera.Front);
-		lightingShader.setVec3("spotLight.position", camera.Position);
-		//pointLight 1
-		lightingShader.setVec3("pointLight[0].ambient", 0.2f, 0.2f, 0.2f);
-		lightingShader.setVec3("pointLight[0].diffuse", pointLightDiffuse[0]);
-		lightingShader.setVec3("pointLight[0].specular", 1.0f, 1.0f, 1.0f);
-		lightingShader.setFloat("pointLight[0].constant", 1.0f);
-		lightingShader.setFloat("pointLight[0].linear", 0.07f);
-		lightingShader.setFloat("pointLight[0].quadratic", 0.017f);
-		lightingShader.setVec3("pointLight[0].position", pointLightPositions[0]);
-		//pointLight 2
-		lightingShader.setVec3("pointLight[1].ambient", 0.2f, 0.2f, 0.2f);
-		lightingShader.setVec3("pointLight[1].diffuse", pointLightDiffuse[1]);
-		lightingShader.setVec3("pointLight[1].specular", 1.0f, 1.0f, 1.0f);
-		lightingShader.setFloat("pointLight[1].constant", 1.0f);
-		lightingShader.setFloat("pointLight[1].linear", 0.07f);
-		lightingShader.setFloat("pointLight[1].quadratic", 0.017f);
-		lightingShader.setVec3("pointLight[1].position", pointLightPositions[1]);
-		//pointLight 3
-		lightingShader.setVec3("pointLight[2].ambient", 0.2f, 0.2f, 0.2f);
-		lightingShader.setVec3("pointLight[2].diffuse", pointLightDiffuse[2]);
-		lightingShader.setVec3("pointLight[2].specular", 1.0f, 1.0f, 1.0f);
-		lightingShader.setFloat("pointLight[2].constant", 1.0f);
-		lightingShader.setFloat("pointLight[2].linear", 0.07f);
-		lightingShader.setFloat("pointLight[2].quadratic", 0.017f);
-		lightingShader.setVec3("pointLight[2].position", pointLightPositions[2]);
-		//pointLight 4
-		lightingShader.setVec3("pointLight[3].ambient", 0.2f, 0.2f, 0.2f);
-		lightingShader.setVec3("pointLight[3].diffuse", pointLightDiffuse[3]);
-		lightingShader.setVec3("pointLight[3].specular", 1.0f, 1.0f, 1.0f);
-		lightingShader.setFloat("pointLight[3].constant", 1.0f);
-		lightingShader.setFloat("pointLight[3].linear", 0.07f);
-		lightingShader.setFloat("pointLight[3].quadratic", 0.017f);
-		lightingShader.setVec3("pointLight[3].position", pointLightPositions[3]);
-
+		pbrShader.use();
 		//Set up transforms
 		Matrix4 model;
 		Matrix4 view;
@@ -298,45 +239,13 @@ int main()
 
 		//model.translate(Vector3(objectPos));
 		view = camera.GetViewMatrix();
-		view.translate(0.0f, 0.0f, -3.0f);
+		//view.translate(0.0f, 0.0f, -3.0f);
 		projection = projection.perspective(camera.Zoom, (float)scr_width / (float)scr_height, 100.0f, 0.1f);
 
-		lightingShader.setMatrix4("view", view);
-		lightingShader.setMatrix4("projection", projection);
-
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, diffuseMap);
-		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, specularMap);
-
-		glBindVertexArray(objectVAO);
-
-		for (int i = 0; i < sizeof(cubePositions); i++) 
-		{
-			model.rotate(20 * i, Vector3(1.0f, 0.5f, 0.3f));
-			model.translate(cubePositions[i]);
-			lightingShader.setMatrix4("model", model);
-
-			glDrawArrays(GL_TRIANGLES, 0, 64);
-		}
-
-		//set up LightSource
-		model = Matrix4().identity();
-		model.scale(0.2f, 0.2f, 0.2f);
-
-		lightSourceShader.use();
-		lightSourceShader.setMatrix4("view", view);
-		lightSourceShader.setMatrix4("projection", projection);
-		
-		glBindVertexArray(lightVAO);
-
-		for (int i = 0; i < sizeof(pointLightPositions); i++) 
-		{
-			model.translate(pointLightPositions[i]);
-			lightSourceShader.setMatrix4("model", model);
-			lightSourceShader.setVec3("diffuse", pointLightDiffuse[i]);
-			glDrawArrays(GL_TRIANGLES, 0, 36);
-		}
+		pbrShader.setMatrix4("view", view);
+		pbrShader.setMatrix4("projection", projection);
+		pbrShader.setMatrix4("model", model);
+		renderSphere();
 
 		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
 		glfwSwapBuffers(window);
@@ -352,6 +261,101 @@ int main()
 	glfwTerminate();
 	return 0;
 
+}
+
+unsigned int sphereVAO = 0;
+unsigned int indexCount;
+void renderSphere()
+{
+	if (sphereVAO == 0)
+	{
+		glGenVertexArrays(1, &sphereVAO);
+
+		unsigned int vbo, ebo;
+		glGenBuffers(1, &vbo);
+		glGenBuffers(1, &ebo);
+
+		std::vector<Vector3> positions;
+		std::vector<Vector2> uv;
+		std::vector<Vector3> normals;
+		std::vector<unsigned int> indices;
+
+		const unsigned int X_SEGMENTS = 64;
+		const unsigned int Y_SEGMENTS = 64;
+		const float PI = 3.14159265359f;
+		for (unsigned int x = 0; x <= X_SEGMENTS; ++x)
+		{
+			for (unsigned int y = 0; y <= Y_SEGMENTS; ++y)
+			{
+				float xSegment = (float)x / (float)X_SEGMENTS;
+				float ySegment = (float)y / (float)Y_SEGMENTS;
+				float xPos = std::cos(xSegment * 2.0f * PI) * std::sin(ySegment * PI);
+				float yPos = std::cos(ySegment * PI);
+				float zPos = std::sin(xSegment * 2.0f * PI) * std::sin(ySegment * PI);
+
+				positions.push_back(Vector3(xPos, yPos, zPos));
+				uv.push_back(Vector2(xSegment, ySegment));
+				normals.push_back(Vector3(xPos, yPos, zPos));
+			}
+		}
+
+		bool oddRow = false;
+		for (unsigned int y = 0; y < Y_SEGMENTS; ++y)
+		{
+			if (!oddRow) // even rows: y == 0, y == 2; and so on
+			{
+				for (unsigned int x = 0; x <= X_SEGMENTS; ++x)
+				{
+					indices.push_back(y * (X_SEGMENTS + 1) + x);
+					indices.push_back((y + 1) * (X_SEGMENTS + 1) + x);
+				}
+			}
+			else
+			{
+				for (int x = X_SEGMENTS; x >= 0; --x)
+				{
+					indices.push_back((y + 1) * (X_SEGMENTS + 1) + x);
+					indices.push_back(y * (X_SEGMENTS + 1) + x);
+				}
+			}
+			oddRow = !oddRow;
+		}
+		indexCount = static_cast<unsigned int>(indices.size());
+
+		std::vector<float> data;
+		for (unsigned int i = 0; i < positions.size(); ++i)
+		{
+			data.push_back(positions[i].x);
+			data.push_back(positions[i].y);
+			data.push_back(positions[i].z);
+			if (normals.size() > 0)
+			{
+				data.push_back(normals[i].x);
+				data.push_back(normals[i].y);
+				data.push_back(normals[i].z);
+			}
+			if (uv.size() > 0)
+			{
+				data.push_back(uv[i].x);
+				data.push_back(uv[i].y);
+			}
+		}
+		glBindVertexArray(sphereVAO);
+		glBindBuffer(GL_ARRAY_BUFFER, vbo);
+		glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(float), &data[0], GL_STATIC_DRAW);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
+		unsigned int stride = (3 + 2 + 3) * sizeof(float);
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride, (void*)0);
+		glEnableVertexAttribArray(1);
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, stride, (void*)(3 * sizeof(float)));
+		glEnableVertexAttribArray(2);
+		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, stride, (void*)(6 * sizeof(float)));
+	}
+
+	glBindVertexArray(sphereVAO);
+	glDrawElements(GL_TRIANGLE_STRIP, indexCount, GL_UNSIGNED_INT, 0);
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes
