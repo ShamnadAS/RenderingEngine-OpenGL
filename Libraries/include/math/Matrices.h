@@ -202,6 +202,8 @@ public:
     Matrix4&    lookAt(const Vector3& target);
     Matrix4&    lookAt(const Vector3& target, const Vector3& up);
     Matrix4 CameraLookAt(Vector3& eye, Vector3& target, Vector3& upDir);
+    Matrix4 CameraLookAt(float ex, float ey, float ez, float tx, float ty, float tz, float ux, float uy, float uz);
+
     //projection matrix
     Matrix4    perspective(float left, float right, float top, float bottom, float far , float near);
     Matrix4    perspective(float fov, float aspectRatio, float far, float near);

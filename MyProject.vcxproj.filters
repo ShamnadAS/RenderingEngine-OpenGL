@@ -52,7 +52,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="shader.vertex">
+    <None Include="equirectToCube.vertex">
       <Filter>Resource Files\Shaders</Filter>
     </None>
     <None Include="shaderLightSource.fragment">
@@ -64,9 +64,15 @@
     <None Include="pbr.fragment">
       <Filter>Resource Files\Shaders</Filter>
     </None>
+    <None Include="backgroundShader.vertex">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="backgroundShader.fragment">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="shader.fragment">
+    <Text Include="equirectToCube.fragment">
       <Filter>Resource Files\Shaders</Filter>
     </Text>
   </ItemGroup>

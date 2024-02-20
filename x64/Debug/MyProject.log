@@ -1,8 +1,8 @@
 ﻿  Main.cpp
-C:\Users\Shamnad\Documents\GitHub\RenderingEngine-OpenGL\Main.cpp(295,11): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-C:\Users\Shamnad\Documents\GitHub\RenderingEngine-OpenGL\Main.cpp(296,11): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-C:\Users\Shamnad\Documents\GitHub\RenderingEngine-OpenGL\Main.cpp(300,16): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-C:\Users\Shamnad\Documents\GitHub\RenderingEngine-OpenGL\Main.cpp(301,16): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-C:\Users\Shamnad\Documents\GitHub\RenderingEngine-OpenGL\Main.cpp(302,10): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-C:\Users\Shamnad\Documents\GitHub\RenderingEngine-OpenGL\Main.cpp(303,10): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\Shamnad\Documents\GitHub\RenderingEngine-OpenGL\Main.cpp(593,11): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\Shamnad\Documents\GitHub\RenderingEngine-OpenGL\Main.cpp(594,11): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\Shamnad\Documents\GitHub\RenderingEngine-OpenGL\Main.cpp(598,16): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\Shamnad\Documents\GitHub\RenderingEngine-OpenGL\Main.cpp(599,16): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\Shamnad\Documents\GitHub\RenderingEngine-OpenGL\Main.cpp(600,10): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\Shamnad\Documents\GitHub\RenderingEngine-OpenGL\Main.cpp(601,10): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
   MyProject.vcxproj -> C:\Users\Shamnad\Documents\GitHub\RenderingEngine-OpenGL\x64\Debug\MyProject.exe
