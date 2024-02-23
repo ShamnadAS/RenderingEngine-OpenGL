@@ -70,6 +70,9 @@
     <None Include="backgroundShader.fragment">
       <Filter>Resource Files\Shaders</Filter>
     </None>
+    <None Include="irradiance.fragment">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Text Include="equirectToCube.fragment">

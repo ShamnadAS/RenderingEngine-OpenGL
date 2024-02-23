@@ -16,7 +16,6 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 unsigned int loadTexture(char const* path);
 void renderSphere();
 void renderCube();
-void renderSkybox();
 unsigned int loadCubemap(vector<std::string> faces);
 
 const float DEG2RAD = 3.141593f / 180.0f;
@@ -78,6 +77,7 @@ int main()
 	Shader pbrShader("pbr.vertex", "pbr.fragment");
 	Shader equirectToCube("equirectToCube.vertex", "equirectToCube.fragment");
 	Shader backgroundShader("backgroundShader.vertex", "backgroundShader.fragment");
+	Shader irradianceShader("equirectToCube.vertex", "irradiance.fragment");
 	
 	//wireframe mode	
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -106,7 +106,7 @@ int main()
 	//---------------------------
 	stbi_set_flip_vertically_on_load(true);
 	int width, height, nrComponents;
-	float* data = stbi_loadf("resources/textures/hdr/buikslotermeerplein_1k.hdr", &width, &height,
+	float* data = stbi_loadf("resources/textures/hdr/belfast_sunset_puresky_2k.hdr", &width, &height,
 		&nrComponents, 0);
 	unsigned int hdrTexture;
 	if (data)
@@ -137,11 +137,9 @@ int main()
 		pbrShader.setVec3("lightColors[" + std::to_string(i) + "]", lightColors[i]);
 	}
 
-	pbrShader.setInt("albedoMap", 0);
-	pbrShader.setInt("normalMap", 1);
-	pbrShader.setInt("metallicMap", 2);
-	pbrShader.setInt("roughnessMap", 3);
-	pbrShader.setInt("aoMap", 4);
+	pbrShader.setVec3("albedo", 0.5f, 0.0f, 0.0f);
+	pbrShader.setFloat("ao", 1.0f);
+	pbrShader.setInt("irradianceMap", 0);
 
 	backgroundShader.use();
 	backgroundShader.setInt("environmentMap", 0);
@@ -210,6 +208,45 @@ int main()
 		renderCube();
 	}
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	//---------------------------------------------
+	
+	unsigned int irradianceMap;
+	glGenTextures(1, &irradianceMap);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, irradianceMap);
+	for (unsigned int i = 0; i < 6; ++i)
+	{
+		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB16F, 32, 32,
+			0, GL_RGB, GL_FLOAT, nullptr);
+	}
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
+	glBindRenderbuffer(GL_RENDERBUFFER, captureRBO);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, 32, 32);
+
+	// pbr: solve diffuse integral by convolution to create an irradiance (cube)map.
+	  // -----------------------------------------------------------------------------
+	irradianceShader.use();
+	irradianceShader.setInt("environmentMap", 0);
+	irradianceShader.setMatrix4("projection", captureProjection);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, envCubemap);
+
+	glViewport(0, 0, 32, 32); // don't forget to configure the viewport to the capture dimensions.
+	glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
+	for (unsigned int i = 0; i < 6; ++i)
+	{
+		irradianceShader.setMatrix4("view", captureViews[i]);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, irradianceMap, 0);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		renderCube();
+	}
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	// initialize static shader uniforms before rendering
 	// -------------------------------------------------
@@ -224,18 +261,9 @@ int main()
 	glfwGetFramebufferSize(window, &scrWidth, &scrHeight);
 	glViewport(0, 0, scrWidth, scrHeight);
 
-	//load cube map
-	vector<std::string> faces
-	{
-		"resources/textures/skybox/right.jpg",
-		"resources/textures/skybox/left.jpg",
-		"resources/textures/skybox/top.jpg",
-		"resources/textures/skybox/bottom.jpg",
-		"resources/textures/skybox/front.jpg",
-		"resources/textures/skybox/back.jpg"
-	};
-
-	unsigned skybox = loadCubemap(faces);
+	int nrRows = 7;
+	int nrCols = 7;
+	float spacing = 2.5f;
 	
 	//Render loops
 	while (!glfwWindowShouldClose(window))
@@ -259,27 +287,28 @@ int main()
 
 		view = camera.GetViewMatrix();
 		pbrShader.setMatrix4("view", view);
-
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, albedo);
-		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, normal);
-		glActiveTexture(GL_TEXTURE2);
-		glBindTexture(GL_TEXTURE_2D, metallic);
-		glActiveTexture(GL_TEXTURE3);
-		glBindTexture(GL_TEXTURE_2D, roughness);
-		glActiveTexture(GL_TEXTURE4);
-		glBindTexture(GL_TEXTURE_2D, ao);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, irradianceMap);
+		
+		for (int row = 0; row < nrRows; ++row)
+		{
+			pbrShader.setFloat("metallic", (float)row / (float)nrRows);
+			for (int col = 0; col < nrCols; ++col)
+			{
+				pbrShader.setFloat("roughness", ((float)col / (float)nrCols) < 0.05f? 0.05f : (float(col) / (float)nrCols));
 
-		pbrShader.setMatrix4("model", model);
-		renderSphere();
-
+				Vector3 transform((float)(col - (nrCols / 2)) * spacing, (float)(row - (nrRows/ 2)) * spacing, 0.0f);
+				model.identity();
+				model.translate(transform);
+				pbrShader.setMatrix4("model", model);
+				renderSphere();
+			}
+		}
 		backgroundShader.use();
 		backgroundShader.setMatrix4("view", view);
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_CUBE_MAP, envCubemap);
-		//renderCube();
-		renderSkybox();
+		renderCube();
 
 		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
 		glfwSwapBuffers(window);
@@ -457,70 +486,6 @@ void renderCube()
 	}
 	// render Cube
 	glBindVertexArray(cubeVAO);
-	glDrawArrays(GL_TRIANGLES, 0, 36);
-	glBindVertexArray(0);
-}
-
-unsigned int skyboxVAO = 0;
-unsigned int skyboxVBO = 0;
-void renderSkybox()
-{
-	if (skyboxVAO == 0)
-	{
-		float skyboxVertices[] = {
-			// positions          
-			-1.0f,  1.0f, -1.0f,
-			-1.0f, -1.0f, -1.0f,
-			 1.0f, -1.0f, -1.0f,
-			 1.0f, -1.0f, -1.0f,
-			 1.0f,  1.0f, -1.0f,
-			-1.0f,  1.0f, -1.0f,
-
-			-1.0f, -1.0f,  1.0f,
-			-1.0f, -1.0f, -1.0f,
-			-1.0f,  1.0f, -1.0f,
-			-1.0f,  1.0f, -1.0f,
-			-1.0f,  1.0f,  1.0f,
-			-1.0f, -1.0f,  1.0f,
-
-			 1.0f, -1.0f, -1.0f,
-			 1.0f, -1.0f,  1.0f,
-			 1.0f,  1.0f,  1.0f,
-			 1.0f,  1.0f,  1.0f,
-			 1.0f,  1.0f, -1.0f,
-			 1.0f, -1.0f, -1.0f,
-
-			-1.0f, -1.0f,  1.0f,
-			-1.0f,  1.0f,  1.0f,
-			 1.0f,  1.0f,  1.0f,
-			 1.0f,  1.0f,  1.0f,
-			 1.0f, -1.0f,  1.0f,
-			-1.0f, -1.0f,  1.0f,
-
-			-1.0f,  1.0f, -1.0f,
-			 1.0f,  1.0f, -1.0f,
-			 1.0f,  1.0f,  1.0f,
-			 1.0f,  1.0f,  1.0f,
-			-1.0f,  1.0f,  1.0f,
-			-1.0f,  1.0f, -1.0f,
-
-			-1.0f, -1.0f, -1.0f,
-			-1.0f, -1.0f,  1.0f,
-			 1.0f, -1.0f, -1.0f,
-			 1.0f, -1.0f, -1.0f,
-			-1.0f, -1.0f,  1.0f,
-			 1.0f, -1.0f,  1.0f
-		};
-
-		glGenVertexArrays(1, &skyboxVAO);
-		glGenBuffers(1, &skyboxVBO);
-		glBindVertexArray(skyboxVAO);
-		glBindBuffer(GL_ARRAY_BUFFER, skyboxVBO);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxVertices), &skyboxVertices, GL_STATIC_DRAW);
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-	}
-	glBindVertexArray(skyboxVAO);
 	glDrawArrays(GL_TRIANGLES, 0, 36);
 	glBindVertexArray(0);
 }
