@@ -163,6 +163,7 @@
     <None Include="pbr.fragment" />
     <None Include="pbr.vertex" />
     <None Include="equirectToCube.vertex" />
+    <None Include="preFilter.fragment" />
     <None Include="shaderLightSource.fragment" />
   </ItemGroup>
   <ItemGroup>
