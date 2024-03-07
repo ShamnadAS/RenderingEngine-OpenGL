@@ -1,10 +1,25 @@
 ﻿  Main.cpp
-C:\Users\Shamnad\Documents\GitHub\RenderingEngine-OpenGL\Main.cpp(284,25): warning C4244: 'initializing': conversion from 'double' to 'unsigned int', possible loss of data
-C:\Users\Shamnad\Documents\GitHub\RenderingEngine-OpenGL\Main.cpp(285,26): warning C4244: 'initializing': conversion from 'double' to 'unsigned int', possible loss of data
-C:\Users\Shamnad\Documents\GitHub\RenderingEngine-OpenGL\Main.cpp(610,11): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-C:\Users\Shamnad\Documents\GitHub\RenderingEngine-OpenGL\Main.cpp(611,11): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-C:\Users\Shamnad\Documents\GitHub\RenderingEngine-OpenGL\Main.cpp(615,16): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-C:\Users\Shamnad\Documents\GitHub\RenderingEngine-OpenGL\Main.cpp(616,16): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-C:\Users\Shamnad\Documents\GitHub\RenderingEngine-OpenGL\Main.cpp(617,10): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-C:\Users\Shamnad\Documents\GitHub\RenderingEngine-OpenGL\Main.cpp(618,10): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\Shamnad\Documents\GitHub\RenderingEngine-OpenGL\Main.cpp(292,25): warning C4244: 'initializing': conversion from 'double' to 'unsigned int', possible loss of data
+C:\Users\Shamnad\Documents\GitHub\RenderingEngine-OpenGL\Main.cpp(293,26): warning C4244: 'initializing': conversion from 'double' to 'unsigned int', possible loss of data
+C:\Users\Shamnad\Documents\GitHub\RenderingEngine-OpenGL\Main.cpp(675,11): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\Shamnad\Documents\GitHub\RenderingEngine-OpenGL\Main.cpp(676,11): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\Shamnad\Documents\GitHub\RenderingEngine-OpenGL\Main.cpp(680,16): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\Shamnad\Documents\GitHub\RenderingEngine-OpenGL\Main.cpp(681,16): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\Shamnad\Documents\GitHub\RenderingEngine-OpenGL\Main.cpp(682,10): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\Shamnad\Documents\GitHub\RenderingEngine-OpenGL\Main.cpp(683,10): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+glfw3.lib(context.obj) : warning LNK4099: PDB 'glfw3.pdb' was not found with 'glfw3.lib(context.obj)' or at 'C:\Users\Shamnad\Documents\GitHub\RenderingEngine-OpenGL\x64\Debug\glfw3.pdb'; linking object as if no debug info
+glfw3.lib(init.obj) : warning LNK4099: PDB 'glfw3.pdb' was not found with 'glfw3.lib(init.obj)' or at 'C:\Users\Shamnad\Documents\GitHub\RenderingEngine-OpenGL\x64\Debug\glfw3.pdb'; linking object as if no debug info
+glfw3.lib(input.obj) : warning LNK4099: PDB 'glfw3.pdb' was not found with 'glfw3.lib(input.obj)' or at 'C:\Users\Shamnad\Documents\GitHub\RenderingEngine-OpenGL\x64\Debug\glfw3.pdb'; linking object as if no debug info
+glfw3.lib(monitor.obj) : warning LNK4099: PDB 'glfw3.pdb' was not found with 'glfw3.lib(monitor.obj)' or at 'C:\Users\Shamnad\Documents\GitHub\RenderingEngine-OpenGL\x64\Debug\glfw3.pdb'; linking object as if no debug info
+glfw3.lib(vulkan.obj) : warning LNK4099: PDB 'glfw3.pdb' was not found with 'glfw3.lib(vulkan.obj)' or at 'C:\Users\Shamnad\Documents\GitHub\RenderingEngine-OpenGL\x64\Debug\glfw3.pdb'; linking object as if no debug info
+glfw3.lib(window.obj) : warning LNK4099: PDB 'glfw3.pdb' was not found with 'glfw3.lib(window.obj)' or at 'C:\Users\Shamnad\Documents\GitHub\RenderingEngine-OpenGL\x64\Debug\glfw3.pdb'; linking object as if no debug info
+glfw3.lib(win32_init.obj) : warning LNK4099: PDB 'glfw3.pdb' was not found with 'glfw3.lib(win32_init.obj)' or at 'C:\Users\Shamnad\Documents\GitHub\RenderingEngine-OpenGL\x64\Debug\glfw3.pdb'; linking object as if no debug info
+glfw3.lib(win32_joystick.obj) : warning LNK4099: PDB 'glfw3.pdb' was not found with 'glfw3.lib(win32_joystick.obj)' or at 'C:\Users\Shamnad\Documents\GitHub\RenderingEngine-OpenGL\x64\Debug\glfw3.pdb'; linking object as if no debug info
+glfw3.lib(win32_monitor.obj) : warning LNK4099: PDB 'glfw3.pdb' was not found with 'glfw3.lib(win32_monitor.obj)' or at 'C:\Users\Shamnad\Documents\GitHub\RenderingEngine-OpenGL\x64\Debug\glfw3.pdb'; linking object as if no debug info
+glfw3.lib(win32_time.obj) : warning LNK4099: PDB 'glfw3.pdb' was not found with 'glfw3.lib(win32_time.obj)' or at 'C:\Users\Shamnad\Documents\GitHub\RenderingEngine-OpenGL\x64\Debug\glfw3.pdb'; linking object as if no debug info
+glfw3.lib(win32_thread.obj) : warning LNK4099: PDB 'glfw3.pdb' was not found with 'glfw3.lib(win32_thread.obj)' or at 'C:\Users\Shamnad\Documents\GitHub\RenderingEngine-OpenGL\x64\Debug\glfw3.pdb'; linking object as if no debug info
+glfw3.lib(win32_window.obj) : warning LNK4099: PDB 'glfw3.pdb' was not found with 'glfw3.lib(win32_window.obj)' or at 'C:\Users\Shamnad\Documents\GitHub\RenderingEngine-OpenGL\x64\Debug\glfw3.pdb'; linking object as if no debug info
+glfw3.lib(wgl_context.obj) : warning LNK4099: PDB 'glfw3.pdb' was not found with 'glfw3.lib(wgl_context.obj)' or at 'C:\Users\Shamnad\Documents\GitHub\RenderingEngine-OpenGL\x64\Debug\glfw3.pdb'; linking object as if no debug info
+glfw3.lib(egl_context.obj) : warning LNK4099: PDB 'glfw3.pdb' was not found with 'glfw3.lib(egl_context.obj)' or at 'C:\Users\Shamnad\Documents\GitHub\RenderingEngine-OpenGL\x64\Debug\glfw3.pdb'; linking object as if no debug info
+glfw3.lib(osmesa_context.obj) : warning LNK4099: PDB 'glfw3.pdb' was not found with 'glfw3.lib(osmesa_context.obj)' or at 'C:\Users\Shamnad\Documents\GitHub\RenderingEngine-OpenGL\x64\Debug\glfw3.pdb'; linking object as if no debug info
   MyProject.vcxproj -> C:\Users\Shamnad\Documents\GitHub\RenderingEngine-OpenGL\x64\Debug\MyProject.exe

@@ -159,11 +159,14 @@
   <ItemGroup>
     <None Include="backgroundShader.fragment" />
     <None Include="backgroundShader.vertex" />
+    <None Include="brdf.fragment" />
+    <None Include="brdf.vertex" />
     <None Include="irradiance.fragment" />
     <None Include="pbr.fragment" />
     <None Include="pbr.vertex" />
     <None Include="equirectToCube.vertex" />
     <None Include="preFilter.fragment" />
+    <None Include="quad.fragment" />
     <None Include="shaderLightSource.fragment" />
   </ItemGroup>
   <ItemGroup>

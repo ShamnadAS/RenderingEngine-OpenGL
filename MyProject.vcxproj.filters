@@ -76,6 +76,15 @@
     <None Include="preFilter.fragment">
       <Filter>Resource Files\Shaders</Filter>
     </None>
+    <None Include="brdf.fragment">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="brdf.vertex">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="quad.fragment">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Text Include="equirectToCube.fragment">
